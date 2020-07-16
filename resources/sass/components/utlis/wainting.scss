@@ -1,0 +1,18 @@
+.waiting-result{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #c5c5c480;
+    z-index: 1000;
+    display: table;
+}
+.waiting-result-container{
+    display: table-cell;
+    vertical-align: middle;
+}
+.waiting-result-loading {
+    margin: 0 auto;
+    @include loader07;
+}

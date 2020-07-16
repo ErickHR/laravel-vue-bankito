@@ -1,0 +1,23 @@
+.tableBP{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tableBP thead{
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tableBP th, .tableBP td{
+    padding: 8px;
+}
+
+.tableBP tr:nth-child(even){
+    background-color: #e0dfdf;
+}
+
+.tableBP tbody tr:hover{
+    background-color: rgb(81, 84, 88);
+}

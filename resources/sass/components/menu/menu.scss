@@ -1,0 +1,54 @@
+
+#menu{
+
+    position: fixed;
+    width: 0vw;
+    height: 100vh;
+    // background-color: rgba(95, 91, 91, 0.537);
+    background-color: rgba(255, 255, 255, 0);
+    z-index: 2;
+
+}
+
+.menu-hide{
+
+    width: 100vw !important;
+    background-color: rgba(199, 199, 199, 0.537) !important
+
+}
+
+#app-menu{
+    
+    position: absolute;
+    left: -320px;
+    width: 320px;
+    height: 100vh;
+    background-color: white;
+    transition: all 0.3s cubic-bezier(1, 0, 0, 1);
+    // z-index: 1;
+
+}
+
+#app-menu nav div{
+    height: 39px;
+}
+
+.app-menu-hide{
+
+    left: 0px !important;
+
+}
+
+nav span{
+    color: green;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1.5em;
+    padding-right: 5px;
+}
+
+.container-item{
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 91%;
+}

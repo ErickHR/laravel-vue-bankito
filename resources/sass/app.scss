@@ -1,0 +1,29 @@
+// Fonts
+// @import url('https://fonts.googleapis.com/css?family=Nunito');
+
+@import '~datatables/media/css/jquery.dataTables.min.css';
+@import '../../node_modules/spinthatshit/src/loaders.scss';
+@import '~js-datepicker/dist/datepicker.min.css';
+@import "vue-select/src/scss/vue-select.scss";
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+@import 'components/Users/users.scss';
+
+@import 'components/menu/menu.scss';
+@import 'components/menu/item/item.scss';
+@import 'components/utlis/wainting.scss';
+
+
+// https://www.npmjs.com/package/spinthatshit
+// https://www.cssscript.com/12-pure-cssscss-loading-indicators-spinthatshit/
+// https://www.npmjs.com/package/sweetalert2
+// https://sweetalert2.github.io/#themes
+// https://github.com/sagalbot/vue-select
+// https://www.npmjs.com/package/vuejs-datepicker
+// https://es.vuejs.org/v2/guide/forms.html
+// https://datatables.net/plug-ins/i18n/Spanish
