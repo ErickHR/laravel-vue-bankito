@@ -1,66 +1,65 @@
 <template>
 
     <div class="container">
-        <div class="form-group">
-            <div class="row">
-                <div class="col">
-                    <label for="document_type">Tipo de Documento</label>
-                    <v-select class="bg-white " :options="[ 'dni', 'pasaporte', 'immigration_card' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
+        <div>
+            <div class="f-20 f-weight">Datos Personales</div>
+            <div class="p-3 bg-01 border-top">
+                <div class="row">
+                    <div class="col">
+                        <label for="document_type">Tipo de Documento</label>
+                        <v-select class="bg-white " :options="[ 'dni', 'pasaporte', 'immigration_card' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
+                    </div>
+                    <div class="col">
+                        <label for="dni">Número de Documento</label>
+                        <input type="number" name="dni" class="form-control" placeholder="Documento" v-model="data.dni">
+                    </div>
                 </div>
-                <div class="col">
-                    <label for="dni">Número de Documento</label>
-                    <input type="number" name="dni" class="form-control" placeholder="Documento" v-model="data.dni">
+                <div class="row">
+                    <div class="col">
+                        <label for="name">Nombre</label>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Nombre" v-model="data.name">
+                    </div>
+                    <div class="col">
+                        <label for="father_last_name">Apellido Materno</label>
+                        <input type="text" name="mother_last_name" id="father_last_name" class="form-control" v-model="data.mother_last_name" placeholder="Apellido Paterno">
+                    </div>
+                    <div class="col">
+                        <label for="mother_last_name">Apellido Paterno</label>
+                        <input type="text" name="father_last_name" id="mother_last_name" class="form-control" v-model="data.dather_last_name" placeholder="Apellido Materno">
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="row">
-                <div class="col">
-                    <label for="name">Nombre</label>
-                    <input type="text" name="name" id="name" class="form-control" placeholder="Nombre" v-model="data.name">
+                <div class="row">
+                    <div class="col">
+                        <label for="date_of_birth"> Fecha de Nacimiento </label>
+                        <!-- <input type="date" name="date_of_birth" id="dateOf" class="form-control" > -->
+                        <datepicker :language="es" :disabled-dates="disabledDates" name="date_of_birth" v-model="data.date_of_birth" ></datepicker>
+                    </div>
+                    <div class="col">
+                        <label for="gender">Género</label>
+                        <v-select class="bg-white " :options="[ 'Masculino', 'Femenino' ]" v-model="data.gender" label='gender' placeholder="Género"></v-select>
+                    </div>
+                    <div class="col">
+                        <label for="country_birth">País de Nacimiento</label>
+                        <input type="text" v-model="data.country_birth" name="country_birth" id="country_birth" class="form-control" placeholder="Pais de Nacimiento">
+                    </div>
+                    <div class="col">
+                        <label for="nationality">País de Nacionalidad</label>
+                        <input type="text" v-model="data.nationality" name="nationality" id="nationality" class="form-control" placeholder="Nacionalidad">
+                    </div>
                 </div>
-                <div class="col">
-                    <label for="father_last_name">Apellido Materno</label>
-                    <input type="text" name="mother_last_name" id="father_last_name" class="form-control" v-model="data.mother_last_name" placeholder="Apellido Paterno">
-                </div>
-                <div class="col">
-                    <label for="mother_last_name">Apellido Paterno</label>
-                    <input type="text" name="father_last_name" id="mother_last_name" class="form-control" v-model="data.dather_last_name" placeholder="Apellido Materno">
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col">
-                    <label for="date_of_birth"> Fecha de Nacimiento </label>
-                    <!-- <input type="date" name="date_of_birth" id="dateOf" class="form-control" > -->
-                    <datepicker :language="es" :disabled-dates="disabledDates" name="date_of_birth" v-model="data.date_of_birth" ></datepicker>
-                </div>
-                <div class="col">
-                    <label for="gender">Género</label>
-                    <v-select class="bg-white " :options="[ 'Masculino', 'Femenino' ]" v-model="data.gender" label='gender' placeholder="Género"></v-select>
-                </div>
-                <div class="col">
-                    <label for="country_birth">País de Nacimiento</label>
-                    <input type="text" v-model="data.country_birth" name="country_birth" id="country_birth" class="form-control" placeholder="Pais de Nacimiento">
-                </div>
-                <div class="col">
-                    <label for="nationality">País de Nacionalidad</label>
-                    <input type="text" v-model="data.nationality" name="nationality" id="nationality" class="form-control" placeholder="Nacionalidad">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="civil_status">Estado Civil</label>
-                    <v-select class="bg-white" v-model="data.civil_status" :options="[ 'soltero', 'casado', 'divorciado' ]" label='civil_status' placeholder="Estado Civil" @input="getSelected" ></v-select>
-                </div>
-                <div class="col">
-                    <label for="degree_of_study">Grado de Estudios</label>
-                    <v-select class="bg-white" v-model="data.degree_of_study" :options="degree_study" label='degree_of_study' placeholder="Grado de Estudios"></v-select>
+                <div class="row">
+                    <div class="col">
+                        <label for="civil_status">Estado Civil</label>
+                        <v-select class="bg-white" v-model="data.civil_status" :options="[ 'soltero', 'casado', 'divorciado' ]" label='civil_status' placeholder="Estado Civil" @input="getSelected" ></v-select>
+                    </div>
+                    <div class="col">
+                        <label for="degree_of_study">Grado de Estudios</label>
+                        <v-select class="bg-white" v-model="data.degree_of_study" :options="degree_study" label='degree_of_study' placeholder="Grado de Estudios"></v-select>
+                    </div>
                 </div>
             </div>
         </div>
+        
         <div class="form-group">
             <div class="row">
                 <div class="col">

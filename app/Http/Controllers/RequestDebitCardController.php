@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Person;
 use App\RequestDebitCard;
 use Illuminate\Http\Request;
 
-class PersonController extends Controller
+class RequestDebitCardController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +14,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $person = Person::with( 'request_credit_card' )->get();
-        return response( [ "data" => $person ] );
+        return RequestDebitCard::all();
     }
 
     /**
@@ -37,22 +35,16 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $person = Person::create( $request->all() );
-            $person->request_credit_card()->create( $request->all() );
-            return response( [ "response" => true ] );
-        } catch (\Throwable $th) {
-            return response( [ "response" => false, "e"=>$th ] );
-        }
+        return RequestDebitCard::create( $request->all() );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestDebitCard  $requestDebitCard
      * @return \Illuminate\Http\Response
      */
-    public function show(Person $person)
+    public function show(RequestDebitCard $requestDebitCard)
     {
         //
     }
@@ -60,10 +52,10 @@ class PersonController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestDebitCard  $requestDebitCard
      * @return \Illuminate\Http\Response
      */
-    public function edit(Person $person)
+    public function edit(RequestDebitCard $requestDebitCard)
     {
         //
     }
@@ -72,10 +64,10 @@ class PersonController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Person  $person
+     * @param  \App\RequestDebitCard  $requestDebitCard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Person $person)
+    public function update(Request $request, RequestDebitCard $requestDebitCard)
     {
         //
     }
@@ -83,10 +75,10 @@ class PersonController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestDebitCard  $requestDebitCard
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Person $person)
+    public function destroy(RequestDebitCard $requestDebitCard)
     {
         //
     }

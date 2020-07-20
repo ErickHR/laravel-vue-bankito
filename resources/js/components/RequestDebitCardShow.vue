@@ -50,12 +50,38 @@ export default {
                     { data:"dni" },
                     { data:"created_at" },
                     {
-                        render : function () {
-                            return `
-                                <div style = " width : fit-content; margin : 0 auto ">
-                                    <button class="btn btn-primary show">Ver</button>
-                                </div>
-                            `
+                        data:null,
+                        render : function ( data ) {
+
+                            if ( data.request_credit_card ){
+                                if ( data.request_credit_card.request == 'ver' )
+                                    return `
+                                            <div style = " width : fit-content; margin : 0 auto ">
+                                                <button class="btn btn-success show">Mostrar</button>
+                                                <button class="btn btn-info show">Aprobar</button>
+                                                <button class="btn btn-warning show">Desaprobar</button>
+                                            </div>
+                                        `
+                                if ( data.request_credit_card.request == 'aprobado' )
+                                    return `
+                                            <div style = " width : fit-content; margin : 0 auto ">
+                                                <button class="btn btn-primary show">Aprobado</button>
+                                            </div>
+                                        `
+                                if ( data.request_credit_card.request == 'desaprobado' )
+                                    return `
+                                            <div style = " width : fit-content; margin : 0 auto ">
+                                                <button class="btn btn-danger show">Desaprobado</button>
+                                            </div>
+                                        `
+                            }
+                             
+                             return `
+                                        <div style = " width : fit-content; margin : 0 auto ">
+                                            <button class="btn btn-link red show">Vacío</button>
+                                        </div>
+                                    `
+                                
                         }
                     }
                 ],

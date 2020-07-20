@@ -13,7 +13,7 @@
                 </div>
                 <div class="col">
                     <label for="dni">Número de Documento</label>
-                    <input type="text" name="dni" class="form-control" placeholder="Documento" v-model="data.dni">
+                    <input type="text" name="dni" class="form-control" placeholder="Documento" v-model="data.document_number">
                 </div>
             </div>
         </div>
@@ -25,11 +25,11 @@
                     <input type="text" name="name" id="name" class="form-control" placeholder="Nombre" v-model="data.name">
                 </div>
                 <div class="col">
-                    <label for="mother_last_name">Apellido Materno</label>
+                    <label for="mother_last_name">Apellido Paterno</label>
                     <input type="text" name="mother_last_name" id="mother_last_name" class="form-control" placeholder="Apellido Paterno" v-model="data.mother_last_name">
                 </div>
                 <div class="col">
-                    <label for="father_last_name">Apellido Paterno</label>
+                    <label for="father_last_name">Apellido Materno</label>
                     <input type="text" name="father_last_name" id="father_last_name" class="form-control" placeholder="Apellido Materno" v-model="data.father_last_name">
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 data : {
                     document_type       : "",
                     address             : "",
-                    dni                 : "",
+                    document_number     : "",
                     name                : "",
                     mother_last_name    : "",
                     father_last_name    : "",
@@ -102,10 +102,12 @@
             },
             register(){
                 let _this = this
+                let body = {...this.data}
+                body.cell = JSON.stringify( this.data.cell )
                 this.show_wainting = true
-                axios.post('people', _this.data)
+                axios.post( 'people', body )
                     .then( res => {
-                        res.data.response? _this.showSwal( { tittle:"Guardado!", type:"success" } ) : _this.showSwal( { tittle:"No sé Guardado!", type:"error" } )
+                        res.data.response? _this.showSwal( { tittle:"Guardado!", type:"success" } ) : _this.showSwal( { tittle: `No sé Guardado! ${res.data.e}` , type:"error" } )
                     } )
                     .catch( e =>{
                         _this.showSwal( { tittle:`${e}`, type:"warning" } )
