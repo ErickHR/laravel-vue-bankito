@@ -11423,11 +11423,11 @@ nav span {
   height: 56px;
   border-radius: 50%;
   position: relative;
-  -webkit-animation: loader07-uuwundo 1s linear infinite;
-          animation: loader07-uuwundo 1s linear infinite;
+  -webkit-animation: loader07-uh88f7k 1s linear infinite;
+          animation: loader07-uh88f7k 1s linear infinite;
 }
 
-@-webkit-keyframes loader07-uuwundo {
+@-webkit-keyframes loader07-uh88f7k {
   0% {
     box-shadow: 0 -96px 0 0 rgba(0, 82, 236, 0.05), 68px -68px 0 0 rgba(0, 82, 236, 0.1), 96px 0 0 0 rgba(0, 82, 236, 0.2), 68px 68px 0 0 rgba(0, 82, 236, 0.3), 0 96px 0 0 rgba(0, 82, 236, 0.4), -68px 68px 0 0 rgba(0, 82, 236, 0.6), -96px 0 0 0 rgba(0, 82, 236, 0.8), -68px -68px 0 0 #0052ec;
   }
@@ -11465,7 +11465,7 @@ nav span {
   }
 }
 
-@keyframes loader07-uuwundo {
+@keyframes loader07-uh88f7k {
   0% {
     box-shadow: 0 -96px 0 0 rgba(0, 82, 236, 0.05), 68px -68px 0 0 rgba(0, 82, 236, 0.1), 96px 0 0 0 rgba(0, 82, 236, 0.2), 68px 68px 0 0 rgba(0, 82, 236, 0.3), 0 96px 0 0 rgba(0, 82, 236, 0.4), -68px 68px 0 0 rgba(0, 82, 236, 0.6), -96px 0 0 0 rgba(0, 82, 236, 0.8), -68px -68px 0 0 #0052ec;
   }
@@ -11517,5 +11517,18 @@ nav span {
 
 .f-weight {
   font-weight: bold;
+}
+
+.pop-up {
+  background: white;
+  min-width: 250px;
+  min-height: 250px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  max-height: 100vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  margin: auto;
 }
 

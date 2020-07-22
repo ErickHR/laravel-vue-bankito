@@ -4,16 +4,18 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RequestCreditCard extends Model
+class RequestCard extends Model
 {
     protected $fillable = [
-        'request',
         'person_id',
+        'type',
+        'request',
+        'degree_credit',
         'status'
     ];
 
     public function person(){
-        return $this->belongsTo( 'App/Person' );
+        return $this->belongsTo('App\Person');
     }
 
 }

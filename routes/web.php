@@ -23,5 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
 });
 Route::resource('people', 'PersonController');
-Route::resource('request-debit-cards', 'RequestDebitCardController');
+Route::resource('request-cards', 'RequestCardController');
+Route::get('request-debit-cards-show', 'RequestCardController@request_debit_card_show');
+Route::get('request-credit-cards-show', 'RequestCardController@request_credit_card_show');
 

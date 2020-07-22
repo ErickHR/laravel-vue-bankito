@@ -36,45 +36,43 @@ export default {
          $(document).ready( function () {
             table = $('#table_id').DataTable( {
                 ajax:{
-                    url:'/people'
+                    url:'/request-debit-cards-show'
                 },
                 columns:[
                     { data : 'id' },
-                    { data:"name" },
+                    { data:"person.name" },
                     {
                         data : null,
                         render : function ( data, type, full, meta ){
-                            return data.father_last_name + " " + data.mother_last_name
+                            return data.person.father_last_name + " " + data.person.mother_last_name
                         }
                     },
-                    { data:"dni" },
+                    { data:"person.document_number" },
                     { data:"created_at" },
                     {
                         data:null,
                         render : function ( data ) {
-
-                            if ( data.request_credit_card ){
-                                if ( data.request_credit_card.request == 'ver' )
-                                    return `
-                                            <div style = " width : fit-content; margin : 0 auto ">
-                                                <button class="btn btn-success show">Mostrar</button>
-                                                <button class="btn btn-info show">Aprobar</button>
-                                                <button class="btn btn-warning show">Desaprobar</button>
-                                            </div>
-                                        `
-                                if ( data.request_credit_card.request == 'aprobado' )
-                                    return `
-                                            <div style = " width : fit-content; margin : 0 auto ">
-                                                <button class="btn btn-primary show">Aprobado</button>
-                                            </div>
-                                        `
-                                if ( data.request_credit_card.request == 'desaprobado' )
-                                    return `
-                                            <div style = " width : fit-content; margin : 0 auto ">
-                                                <button class="btn btn-danger show">Desaprobado</button>
-                                            </div>
-                                        `
-                            }
+                            
+                            if ( data.request == 'ver' )
+                                return `
+                                        <div style = " width : fit-content; margin : 0 auto ">
+                                            <button class="btn btn-success show">Mostrar</button>
+                                            <button class="btn btn-info show">Aprobar</button>
+                                            <button class="btn btn-warning show">Desaprobar</button>
+                                        </div>
+                                    `
+                            if ( data.request == 'aprobado' )
+                                return `
+                                        <div style = " width : fit-content; margin : 0 auto ">
+                                            <button class="btn btn-primary show">Aprobado</button>
+                                        </div>
+                                    `
+                            if ( data.request == 'desaprobado' )
+                                return `
+                                        <div style = " width : fit-content; margin : 0 auto ">
+                                            <button class="btn btn-danger show">Desaprobado</button>
+                                        </div>
+                                    `
                              
                              return `
                                         <div style = " width : fit-content; margin : 0 auto ">

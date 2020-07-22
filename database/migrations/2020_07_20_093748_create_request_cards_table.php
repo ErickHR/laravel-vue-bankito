@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRequestDebitCardsTable extends Migration
+class CreateRequestCardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateRequestDebitCardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('request_debit_cards', function (Blueprint $table) {
+        Schema::create('request_cards', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('request')->default('ver');
             $table->integer('person_id');
+            $table->string('type');
+            $table->string('request')->default('ver');
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
@@ -29,6 +30,6 @@ class CreateRequestDebitCardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('request_debit_cards');
+        Schema::dropIfExists('request_cards');
     }
 }

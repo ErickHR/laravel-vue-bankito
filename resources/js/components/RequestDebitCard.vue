@@ -5,15 +5,11 @@
             <div class="row">
                 <div class="col">
                     <label for="document_type">Tipo de Documento</label>
-                    <select class="form-control" name="document_type" id="document_type" v-model="data.document_type">
-                        <option value="dni" selected>DNI</option>
-                        <option value="passport">Pasaporte</option>
-                        <option value="immigration_card">Carnet de Extranjeria</option>
-                    </select>
+                        <v-select class="bg-white " :options="[ 'dni', 'Pasaporte', 'Carnet de Extranjeria' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
                 </div>
                 <div class="col">
                     <label for="dni">Número de Documento</label>
-                    <input type="text" name="dni" class="form-control" placeholder="Documento" v-model="data.document_number">
+                    <input type="number" name="dni" class="form-control" placeholder="Documento" v-model="data.document_number">
                 </div>
             </div>
         </div>
@@ -52,6 +48,14 @@
         </div>
         <div class="form-group">
             <div class="row">
+                <div class="col">
+                    <label for="gender">Género</label>
+                    <v-select class="bg-white " :options="[ 'Masculino', 'Femenino' ]" v-model="data.gender" label='gender' placeholder="Género"></v-select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
                 <div class="col-10">
                 </div>
                 <div class="col-1">
@@ -81,6 +85,8 @@
                     name                : "",
                     mother_last_name    : "",
                     father_last_name    : "",
+                    type                : "debit",
+                    genero              : "",
                     cell : {
                         movil_phone_one : "",
                         movil_phone_two : "",

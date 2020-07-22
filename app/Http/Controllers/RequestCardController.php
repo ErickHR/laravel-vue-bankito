@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Person;
+use App\RequestCard;
 use Illuminate\Http\Request;
 
-class PersonController extends Controller
+class RequestCardController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,12 +14,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $person = Person::with( ['request_card' => function( $query ){
-            $query->where('type', '=', 'Debit');
-        }] )->whereHas( 'request_card', function( $query ){
-            $query->where('type', '=', 'Debit');
-        } )->get(); 
-        return response( [ "data" => $person ] );
+        return RequestCard::where("type", "=", "Credit")->get();
     }
 
     /**
@@ -40,33 +35,27 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        // try {
-            $person = Person::create( $request->all() );
-            $person->request_card()->create( $request->all() );
-            return response( [ "response" => true ] );
-        // } catch (\Throwable $th) {
-        //     return response( [ "response" => false, "e"=>$th ] );
-        // }
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestCard  $requestCard
      * @return \Illuminate\Http\Response
      */
-    public function show(Person $person)
+    public function show(RequestCard $requestCard)
     {
-        //
+        return response( RequestCard::with('person')->findOrFail( $requestCard->id ) );
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestCard  $requestCard
      * @return \Illuminate\Http\Response
      */
-    public function edit(Person $person)
+    public function edit(RequestCard $requestCard)
     {
         //
     }
@@ -75,27 +64,40 @@ class PersonController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Person  $person
+     * @param  \App\RequestCard  $requestCard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Person $person)
+    public function update(Request $request, RequestCard $requestCard)
     {
         try {
-            $person->update( $request->all() );
+            $requestCard->update( $request->all() );
             return response( [ "response" => true ] );
         } catch (\Throwable $th) {
-            return response( [ "response" => false, "e"=>$th ] );
+            return response( [ "response" => false, '"e'=> $th ] );
         }
+        // $requestCard->request="credit"; 
+        // $requestCard->save();  
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Person  $person
+     * @param  \App\RequestCard  $requestCard
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Person $person)
+    public function destroy(RequestCard $requestCard)
     {
         //
     }
+
+    public function request_debit_card_show(){
+        $request_debit_card = RequestCard::with( 'person' )->where( 'type', 'debit' )->get();
+        return response( [ "data" => $request_debit_card ] );
+    }
+
+    public function request_credit_card_show(){
+        $request_debit_card = RequestCard::with( 'person' )->where( 'type', 'credit' )->get();
+        return response( [ "data" => $request_debit_card ] );
+    }
+
 }

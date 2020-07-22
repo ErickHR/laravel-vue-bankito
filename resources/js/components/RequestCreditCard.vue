@@ -7,11 +7,11 @@
                 <div class="row">
                     <div class="col">
                         <label for="document_type">Tipo de Documento</label>
-                        <v-select class="bg-white " :options="[ 'dni', 'pasaporte', 'immigration_card' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
+                        <v-select class="bg-white " :options="[ 'dni', 'Pasaporte', 'Carnet de Extranjeria' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
                     </div>
                     <div class="col">
                         <label for="dni">Número de Documento</label>
-                        <input type="number" name="dni" class="form-control" placeholder="Documento" v-model="data.dni">
+                        <input type="number" name="dni" class="form-control" placeholder="Documento" v-model="data.document_number">
                     </div>
                 </div>
                 <div class="row">
@@ -20,18 +20,17 @@
                         <input type="text" name="name" id="name" class="form-control" placeholder="Nombre" v-model="data.name">
                     </div>
                     <div class="col">
-                        <label for="father_last_name">Apellido Materno</label>
-                        <input type="text" name="mother_last_name" id="father_last_name" class="form-control" v-model="data.mother_last_name" placeholder="Apellido Paterno">
+                        <label for="father_last_name">Apellido Paterno</label>
+                        <input type="text" name="father_last_name" id="father_last_name" class="form-control" v-model="data.father_last_name" placeholder="Apellido Paterno">
                     </div>
                     <div class="col">
-                        <label for="mother_last_name">Apellido Paterno</label>
-                        <input type="text" name="father_last_name" id="mother_last_name" class="form-control" v-model="data.dather_last_name" placeholder="Apellido Materno">
+                        <label for="mother_last_name">Apellido Materno</label>
+                        <input type="text" name="mother_last_name" id="mother_last_name" class="form-control" v-model="data.mother_last_name" placeholder="Apellido Materno">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label for="date_of_birth"> Fecha de Nacimiento </label>
-                        <!-- <input type="date" name="date_of_birth" id="dateOf" class="form-control" > -->
                         <datepicker :language="es" :disabled-dates="disabledDates" name="date_of_birth" v-model="data.date_of_birth" ></datepicker>
                     </div>
                     <div class="col">
@@ -98,7 +97,7 @@
                 </div>
                 <div class="col">
                     <label for="jr">Jirón</label>
-                    <input type="text" v-model="data.address.district" name="jr" id="jr" class="form-control" placeholder="Jiron">
+                    <input type="text" v-model="data.address.jr" name="jr" id="jr" class="form-control" placeholder="Jiron">
                 </div>
                 <div class="col">
                     <label for="district">Distrito</label>
@@ -155,7 +154,8 @@
                 <div class="col-10">
                 </div>
                 <div class="col-1">
-                    <button class="btn btn-primary" @click="register">Registrar</button>
+                    <button class="btn btn-primary" @click="register" v-if="!update">Registrar</button>
+                    <button class="btn btn-warning" @click="modified_data" v-if="update">Modificar</button>
                 </div>
                 <div class="col-1">
                 </div>
@@ -172,12 +172,17 @@
         components:{
             Appwaiting
         },
+        props:[
+            'data_props',
+            'update_props'
+        ],
         data: function(){
             return{
-                show_waiting             : false,
+                update                  : false,
+                show_waiting            : false,
                 data : {
                     document_type       : "",
-                    dni                 : "",
+                    document_number     : "",
                     name                : "",
                     mother_last_name    : "",
                     father_last_name    : "",
@@ -203,13 +208,13 @@
                     },
                     employment          : "",
                     salary              : "",
-                    degreet_credit      : ""
+                    degreet_credit      : "",
+                    type                : "credit"
                 },
                 disabledDates:{
                     from : this.authorizedDate()
                 },
                 es: language,
-                prueba:"",
                 degree_study:[
                     '1° primaria',
                     '2° primaria',
@@ -244,12 +249,30 @@
                         msg.type
                     )
             },
+            modified_data(){
+                let _this = this
+                let body = { ...this.data }
+                body.address = JSON.stringify( this.data.address )
+                body.cell = JSON.stringify( this.data.cell )
+                this.show_waiting = true
+                console.log(this.data)
+                axios.put( `people/${_this.data.id}`, body )
+                    .then( res => {
+                        res.data.response ? _this.showSwal( { tittle : "Modificado !", type : "success" } ) : _this.showSwal( { tittle : `Error.. ${res.response.e}`, type:'error' } )
+                    } )
+                    .catch( e => {
+                        _this.showSwal( { tittle:`${e}`, type:"warning" } )
+                    } )
+            },
             register(){
                 let _this = this
+                let body = { ...this.data }
+                body.address = JSON.stringify( this.data.address )
+                body.cell = JSON.stringify( this.data.cell )
                 this.show_waiting = true
-                axios.post( 'people', _this.data )
+                axios.post( 'people', body )
                     .then( res => {
-                        res.data.response? _this.showSwal( { tittle:"Guardado!", type:"success" } ) : _this.showSwal( { tittle:"No sé Guardado!", type:"error" } )
+                        res.data.response? _this.showSwal( { tittle:"Guardado!", type:"success" } ) : _this.showSwal( { tittle: `No sé Guardado! ${res.data.e}`, type:"error" } )
                     } )
                     .catch( e =>{
                         _this.showSwal( { tittle:`${e}`, type:"warning" } )
@@ -258,6 +281,12 @@
         },
         mounted(){
             $(".vdp-datepicker input").css({'border': '1px solid #ced4da', 'border-radius' : '4px', 'color':'#495057', 'height':'38px'})
+
+            if ( this.data_props ){
+                this.data   = this.data_props
+                this.update = this.update_props
+            }
+            
         }
     }
 </script>

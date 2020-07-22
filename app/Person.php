@@ -8,18 +8,26 @@ class Person extends Model
 {
     
     protected $fillable = [
-        'name',
         'document_type',
         'document_number',
-        'mother_last_name',
+        'name',
         'father_last_name',
-        'dni',
+        'mother_last_name',
+        'gender',
+        'country_birth',
+        'date_of_birth',
+        'nationality',
+        'civil_status',
+        'degree_of_study',
         'cell',
-        'address'
+        'email',
+        'address',
+        'employment',
+        'salary'
     ];
 
-    public function request_credit_card(){
-        return $this->hasOne('App\RequestDebitCard');
+    public function request_card(){
+        return $this->hasMany('App\RequestCard');
     }
 
     public function account(){
