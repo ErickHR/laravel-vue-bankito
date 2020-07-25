@@ -11,8 +11,12 @@ class Card extends Model
         'card_number',
         'expired_date',
         'CVC',
-        'type_card'
+        'account_id'
     ];
+
+    public function account(){
+        return $this->belongsTo('App\Account');
+    }
 
     protected function credit(){
         return $this->hasOne('App\Credit');

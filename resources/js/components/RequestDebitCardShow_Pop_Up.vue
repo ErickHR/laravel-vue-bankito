@@ -2,18 +2,18 @@
     <div class="waiting-result">
         <div class="waiting-result-container">
             <div class="pop-up">
-                <request-credit-card :data_props="data" :update_props="true" @close_request_credit_card="close_request_card"></request-credit-card>
+                <request-debit-card :data_props="data" :update_props="true" @close_request_credit_card="close_request_card"></request-debit-card>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import requestCreditCard from './RequestCreditCard.vue'
+import requestDebitCard from './RequestDebitCard.vue'
 export default {
     
     components:{
-        requestCreditCard
+        requestDebitCard
     },
     props:[
         'data'

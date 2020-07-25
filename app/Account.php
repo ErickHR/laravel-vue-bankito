@@ -11,8 +11,14 @@ class Account extends Model
         'account_number',
         'amount',
         'account_type_id',
-        'person_id'
+        'person_id',
+        'type',
+        'request'
     ];
+
+    public function card(){
+        return $this->hasOne('App\Card');
+    }
 
     public function account_type(){
 

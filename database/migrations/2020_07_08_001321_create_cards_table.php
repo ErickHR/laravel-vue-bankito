@@ -18,7 +18,7 @@ class CreateCardsTable extends Migration
             $table->string('card_number');
             $table->date('expired_date');
             $table->string('CVC');
-            $table->string('type_card');
+            $table->string('account_id');
             $table->timestamps();
         });
     }

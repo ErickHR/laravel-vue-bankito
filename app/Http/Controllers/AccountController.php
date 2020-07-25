@@ -14,7 +14,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -46,7 +46,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        //
+        return response( Account::with(['person', 'card'])->findOrFail( $account->id ) );
     }
 
     /**
@@ -82,4 +82,15 @@ class AccountController extends Controller
     {
         //
     }
+
+    public function request_debit(){
+        $request_debit = Account::with( ['person', 'card'] )->where( 'type', 'debit' )->get();
+        return response( [ "data" => $request_debit ] );
+    }
+
+    public function request_credit(){
+        $request_credit = Account::with( 'person' )->where( 'type', 'credit' )->get();
+        return response( [ "data" => $request_credit ] );
+    }
+
 }

@@ -14,7 +14,7 @@
             </thead>
         </table>
         <Appwaiting v-if="show_waiting"></Appwaiting>
-        <request-credit-card-pop-up :data="show_request_credit_data" v-if="show_request_credit"></request-credit-card-pop-up>
+        <request-credit-card-pop-up :data="show_request_credit_data" v-if="show_request_credit" @close_request_card="close_request_credit_card"></request-credit-card-pop-up>
     </div>
 
 </template>
@@ -35,11 +35,13 @@ export default {
         }
     },
     methods:{
+        close_request_credit_card(){
+            this.show_request_credit = false
+        },
         show( table ){
             let _this = this
             $( "button.show" ).on('click', function(){
                 let data = table.row( $(this).parents( 'tr' ) ).data()
-    
                 axios.get( `request-cards/${data.id}` )
                     .then( res => {
 
@@ -102,11 +104,12 @@ export default {
         }
     },
     mounted(){
-        let _this = this
-        let table
+        
         this.show_waiting = false
-         $(document).ready( function () {
-                table = $('#table_id').DataTable( {
+        let _this = this
+            let table
+            table = $('#table_id').DataTable( {
+                    destroy:true,
                     ajax:{
                         url:'/request-credit-cards-show'
                     },
@@ -177,14 +180,14 @@ export default {
                             "colvis": "Visibilidad"
                         }
                     }
-                    }  )
+                    }  
+                )
 
-                table.on( 'draw', function () {
-                    _this.show( table )
-                    _this.approve_disapprove(table)
-                    
-                } );
-            } )
+            table.on( 'draw', function () {
+                _this.show( table )
+                _this.approve_disapprove(table)
+                
+            } );
         
     }
 }

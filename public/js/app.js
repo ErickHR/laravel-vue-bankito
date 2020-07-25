@@ -2492,26 +2492,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2520,6 +2500,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   props: ['data_props', 'update_props'],
   data: function data() {
     return {
+      update_btn: false,
+      change_btn: false,
+      tittle_btn: "",
       update: false,
       show_waiting: false,
       data: {
@@ -2577,24 +2560,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var body = _objectSpread({}, this.data);
 
-      body.address = JSON.stringify(this.data.address);
-      body.cell = JSON.stringify(this.data.cell);
-      this.show_waiting = true;
-      console.log(this.data);
-      axios.put("people/".concat(_this.data.id), body).then(function (res) {
-        res.data.response ? _this.showSwal({
-          tittle: "Modificado !",
-          type: "success"
-        }) : _this.showSwal({
-          tittle: "Error.. ".concat(res.response.e),
-          type: 'error'
+      if (!this.change_btn) {
+        this.change_btn = true;
+        this.update = false;
+        this.tittle_btn = "Guardar";
+      } else {
+        body.address = JSON.stringify(this.data.address);
+        body.cell = JSON.stringify(this.data.cell);
+        this.show_waiting = true;
+        axios.put("people/".concat(_this.data.id), body).then(function (res) {
+          res.data.response ? _this.showSwal({
+            tittle: "Modificado !",
+            type: "success"
+          }) : _this.showSwal({
+            tittle: "Error.. ".concat(res.response.e),
+            type: 'error'
+          });
+
+          _this.$emit('close_request_credit_card');
+        })["catch"](function (e) {
+          _this.showSwal({
+            tittle: "".concat(e),
+            type: "warning"
+          });
         });
-      })["catch"](function (e) {
-        _this.showSwal({
-          tittle: "".concat(e),
-          type: "warning"
-        });
-      });
+      }
     },
     register: function register() {
       var _this = this;
@@ -2621,6 +2611,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   mounted: function mounted() {
+    this.tittle_btn = "Modificar";
     $(".vdp-datepicker input").css({
       'border': '1px solid #ced4da',
       'border-radius': '4px',
@@ -2631,6 +2622,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     if (this.data_props) {
       this.data = this.data_props;
       this.update = this.update_props;
+      this.update_btn = this.update_props;
     }
   }
 });
@@ -2684,6 +2676,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    close_request_credit_card: function close_request_credit_card() {
+      this.show_request_credit = false;
+    },
     show: function show(table) {
       var _this = this;
 
@@ -2737,71 +2732,71 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
+    this.show_waiting = false;
+
     var _this = this;
 
     var table;
-    this.show_waiting = false;
-    $(document).ready(function () {
-      table = $('#table_id').DataTable({
-        ajax: {
-          url: '/request-credit-cards-show'
-        },
-        columns: [{
-          data: 'id'
-        }, {
-          data: "person.name"
-        }, {
-          data: null,
-          render: function render(data, type, full, meta) {
-            return data.person.father_last_name + " " + data.person.mother_last_name;
-          }
-        }, {
-          data: "person.document_number"
-        }, {
-          data: "created_at"
-        }, {
-          data: null,
-          render: function render(data) {
-            if (data.request == 'ver') return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-success show\">Mostrar</button>\n                                                <button class=\"btn btn-info approveDisapprove\" data-request=\"aprobado\">Aprobar</button>\n                                                <button class=\"btn btn-warning approveDisapprove\" data-request=\"desaprobado\">Desaprobar</button>\n                                            </div>\n                                        ";
-            if (data.request == 'aprobado') return _this.btn_approve_disapprove('aprobado');
-            if (data.request == 'desaprobado') return _this.btn_approve_disapprove('desaprobado');
-            return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                            </div>\n                                        ";
-          }
-        }],
-        language: {
-          "sProcessing": "Procesando...",
-          "sLengthMenu": "Mostrar _MENU_ registros",
-          "sZeroRecords": "No se encontraron resultados",
-          "sEmptyTable": "Ningún dato disponible en esta tabla",
-          "sInfo": "Mostrando registros del _START_ al _END_ <br> Total de _TOTAL_ registros",
-          "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-          "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-          "sInfoPostFix": "",
-          "sSearch": "Buscar:",
-          "sUrl": "",
-          "sInfoThousands": ",",
-          "sLoadingRecords": "Cargando...",
-          "oPaginate": {
-            "sFirst": "Primero",
-            "sLast": "Último",
-            "sNext": "Siguiente",
-            "sPrevious": "Anterior"
-          },
-          "oAria": {
-            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-          },
-          "buttons": {
-            "copy": "Copiar",
-            "colvis": "Visibilidad"
-          }
+    table = $('#table_id').DataTable({
+      destroy: true,
+      ajax: {
+        url: '/request-credit-cards-show'
+      },
+      columns: [{
+        data: 'id'
+      }, {
+        data: "person.name"
+      }, {
+        data: null,
+        render: function render(data, type, full, meta) {
+          return data.person.father_last_name + " " + data.person.mother_last_name;
         }
-      });
-      table.on('draw', function () {
-        _this.show(table);
+      }, {
+        data: "person.document_number"
+      }, {
+        data: "created_at"
+      }, {
+        data: null,
+        render: function render(data) {
+          if (data.request == 'ver') return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-success show\">Mostrar</button>\n                                                <button class=\"btn btn-info approveDisapprove\" data-request=\"aprobado\">Aprobar</button>\n                                                <button class=\"btn btn-warning approveDisapprove\" data-request=\"desaprobado\">Desaprobar</button>\n                                            </div>\n                                        ";
+          if (data.request == 'aprobado') return _this.btn_approve_disapprove('aprobado');
+          if (data.request == 'desaprobado') return _this.btn_approve_disapprove('desaprobado');
+          return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                            </div>\n                                        ";
+        }
+      }],
+      language: {
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "Ningún dato disponible en esta tabla",
+        "sInfo": "Mostrando registros del _START_ al _END_ <br> Total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "Primero",
+          "sLast": "Último",
+          "sNext": "Siguiente",
+          "sPrevious": "Anterior"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        },
+        "buttons": {
+          "copy": "Copiar",
+          "colvis": "Visibilidad"
+        }
+      }
+    });
+    table.on('draw', function () {
+      _this.show(table);
 
-        _this.approve_disapprove(table);
-      });
+      _this.approve_disapprove(table);
     });
   }
 });
@@ -2836,6 +2831,11 @@ __webpack_require__.r(__webpack_exports__);
   props: ['data'],
   data: function data() {
     return {};
+  },
+  methods: {
+    close_request_card: function close_request_card() {
+      this.$emit('close_request_card');
+    }
   },
   mounted: function mounted() {}
 });
@@ -2935,6 +2935,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     Appwaiting: _utils_waiting_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ['data_props'],
   data: function data() {
     return {
       data: {
@@ -2983,7 +2984,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     }
   },
-  mounted: function mounted() {}
+  mounted: function mounted() {
+    if (this.data_props) {
+      this.data = this.data_props.person;
+    }
+  }
 });
 
 /***/ }),
@@ -2997,6 +3002,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _RequestDebitCardShow_Pop_Up_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestDebitCardShow_Pop_Up.vue */ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -3016,14 +3028,32 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    requestDebitCardPopUp: _RequestDebitCardShow_Pop_Up_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
   data: function data() {
-    return {};
+    return {
+      request_debit_card_data: "",
+      request_debit_card_show: false
+    };
   },
   methods: {
     show: function show(table) {
+      var _this = this;
+
       $("button.show").on('click', "", function () {
         var data = table.row($(this).parents('tr')).data();
+        axios.get("account/".concat(data.id)).then(function (res) {
+          _this.request_debit_card_data = _objectSpread({}, res.data);
+          _this.request_debit_card_show = true;
+        })["catch"](function (e) {
+          console.log(e);
+        });
       });
     }
   },
@@ -3034,7 +3064,7 @@ __webpack_require__.r(__webpack_exports__);
     $(document).ready(function () {
       table = $('#table_id').DataTable({
         ajax: {
-          url: '/request-debit-cards-show'
+          url: '/account-debit'
         },
         columns: [{
           data: 'id'
@@ -3048,14 +3078,16 @@ __webpack_require__.r(__webpack_exports__);
         }, {
           data: "person.document_number"
         }, {
+          data: "account_number"
+        }, {
+          data: "card.card_number"
+        }, {
           data: "created_at"
         }, {
           data: null,
           render: function render(data) {
-            if (data.request == 'ver') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-success show\">Mostrar</button>\n                                            <button class=\"btn btn-info show\">Aprobar</button>\n                                            <button class=\"btn btn-warning show\">Desaprobar</button>\n                                        </div>\n                                    ";
-            if (data.request == 'aprobado') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-primary show\">Aprobado</button>\n                                        </div>\n                                    ";
-            if (data.request == 'desaprobado') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-danger show\">Desaprobado</button>\n                                        </div>\n                                    ";
-            return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-link red show\">Vac\xEDo</button>\n                                        </div>\n                                    ";
+            if (data.request == 'ver') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-success show\">Mostrar</button>\n                                        </div>\n                                    ";
+            return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                        </div>\n                                    ";
           }
         }],
         language: {
@@ -3087,10 +3119,50 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       });
-
-      _this.show(table);
+      table.on('click', function () {
+        _this.show(table);
+      });
     });
   }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestDebitCard.vue */ "./resources/js/components/RequestDebitCard.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    requestDebitCard: _RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  props: ['data'],
+  data: function data() {
+    return {};
+  },
+  methods: {
+    close_request_card: function close_request_card() {
+      this.$emit('close_request_card');
+    }
+  },
+  mounted: function mounted() {}
 });
 
 /***/ }),
@@ -59308,6 +59380,7 @@ var render = function() {
                 _c("v-select", {
                   staticClass: "bg-white ",
                   attrs: {
+                    disabled: _vm.update,
                     options: ["dni", "Pasaporte", "Carnet de Extranjeria"],
                     label: "document_type",
                     placeholder: "Tipo de Documento"
@@ -59341,6 +59414,7 @@ var render = function() {
                 staticClass: "form-control",
                 attrs: {
                   type: "number",
+                  disabled: _vm.update,
                   name: "dni",
                   placeholder: "Documento"
                 },
@@ -59375,7 +59449,8 @@ var render = function() {
                   type: "text",
                   name: "name",
                   id: "name",
-                  placeholder: "Nombre"
+                  placeholder: "Nombre",
+                  disabled: _vm.update
                 },
                 domProps: { value: _vm.data.name },
                 on: {
@@ -59408,6 +59483,7 @@ var render = function() {
                   type: "text",
                   name: "father_last_name",
                   id: "father_last_name",
+                  disabled: _vm.update,
                   placeholder: "Apellido Paterno"
                 },
                 domProps: { value: _vm.data.father_last_name },
@@ -59441,6 +59517,7 @@ var render = function() {
                   type: "text",
                   name: "mother_last_name",
                   id: "mother_last_name",
+                  disabled: _vm.update,
                   placeholder: "Apellido Materno"
                 },
                 domProps: { value: _vm.data.mother_last_name },
@@ -59469,7 +59546,8 @@ var render = function() {
                   attrs: {
                     language: _vm.es,
                     "disabled-dates": _vm.disabledDates,
-                    name: "date_of_birth"
+                    name: "date_of_birth",
+                    disabled: _vm.update
                   },
                   model: {
                     value: _vm.data.date_of_birth,
@@ -59493,6 +59571,7 @@ var render = function() {
                   staticClass: "bg-white ",
                   attrs: {
                     options: ["Masculino", "Femenino"],
+                    disabled: _vm.update,
                     label: "gender",
                     placeholder: "Género"
                   },
@@ -59526,6 +59605,7 @@ var render = function() {
                 attrs: {
                   type: "text",
                   name: "country_birth",
+                  disabled: _vm.update,
                   id: "country_birth",
                   placeholder: "Pais de Nacimiento"
                 },
@@ -59559,6 +59639,7 @@ var render = function() {
                 attrs: {
                   type: "text",
                   name: "nationality",
+                  disabled: _vm.update,
                   id: "nationality",
                   placeholder: "Nacionalidad"
                 },
@@ -59587,6 +59668,7 @@ var render = function() {
                 _c("v-select", {
                   staticClass: "bg-white",
                   attrs: {
+                    disabled: _vm.update,
                     options: ["soltero", "casado", "divorciado"],
                     label: "civil_status",
                     placeholder: "Estado Civil"
@@ -59615,6 +59697,7 @@ var render = function() {
                 _c("v-select", {
                   staticClass: "bg-white",
                   attrs: {
+                    disabled: _vm.update,
                     options: _vm.degree_study,
                     label: "degree_of_study",
                     placeholder: "Grado de Estudios"
@@ -59654,6 +59737,7 @@ var render = function() {
               attrs: {
                 type: "text",
                 name: "movil_phone_one",
+                disabled: _vm.update,
                 id: "movil_phone_one",
                 placeholder: "Celular"
               },
@@ -59691,6 +59775,7 @@ var render = function() {
               attrs: {
                 type: "text",
                 name: "movil_phone_two",
+                disabled: _vm.update,
                 id: "movil_phone_two",
                 placeholder: "celular(opcional)"
               },
@@ -59729,7 +59814,8 @@ var render = function() {
                 type: "text",
                 name: "email",
                 id: "email",
-                placeholder: "email"
+                placeholder: "email",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.cell.email },
               on: {
@@ -59760,7 +59846,8 @@ var render = function() {
                 type: "text",
                 name: "phone",
                 id: "phone",
-                placeholder: "teléfono"
+                placeholder: "teléfono",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.cell.phone },
               on: {
@@ -59791,7 +59878,13 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text", name: "Mz", id: "Mz", placeholder: "Mz" },
+              attrs: {
+                type: "text",
+                name: "Mz",
+                id: "Mz",
+                placeholder: "Mz",
+                disabled: _vm.update
+              },
               domProps: { value: _vm.data.address.mz },
               on: {
                 input: function($event) {
@@ -59821,7 +59914,8 @@ var render = function() {
                 type: "number",
                 name: "lt",
                 id: "lt",
-                placeholder: "Lt"
+                placeholder: "Lt",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.address.lt },
               on: {
@@ -59852,7 +59946,8 @@ var render = function() {
                 type: "text",
                 name: "street",
                 id: "street",
-                placeholder: "Calle"
+                placeholder: "Calle",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.address.street },
               on: {
@@ -59883,7 +59978,8 @@ var render = function() {
                 type: "text",
                 name: "jr",
                 id: "jr",
-                placeholder: "Jiron"
+                placeholder: "Jiron",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.address.jr },
               on: {
@@ -59914,7 +60010,8 @@ var render = function() {
                 type: "text",
                 name: "district",
                 id: "district",
-                placeholder: "Distrito"
+                placeholder: "Distrito",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.address.district },
               on: {
@@ -59945,7 +60042,8 @@ var render = function() {
                 type: "text",
                 name: "flat",
                 id: "flat",
-                placeholder: "Departemento"
+                placeholder: "Departemento",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.address.flat },
               on: {
@@ -59982,7 +60080,8 @@ var render = function() {
                 type: "text",
                 name: "employment",
                 id: "employment",
-                placeholder: "Ocupación"
+                placeholder: "Ocupación",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.employment },
               on: {
@@ -60015,7 +60114,8 @@ var render = function() {
                 type: "number",
                 name: "salary",
                 id: "salary",
-                placeholder: "Salario Promedio"
+                placeholder: "Salario Promedio",
+                disabled: _vm.update
               },
               domProps: { value: _vm.data.salary },
               on: {
@@ -60044,6 +60144,7 @@ var render = function() {
               _c("v-select", {
                 staticClass: "bg-white color-inpu",
                 attrs: {
+                  disabled: _vm.update,
                   options: [
                     "1 ( 0 - 1500 )",
                     "2 ( 1500 - 5000 )",
@@ -60072,7 +60173,7 @@ var render = function() {
           _c("div", { staticClass: "col-10" }),
           _vm._v(" "),
           _c("div", { staticClass: "col-1" }, [
-            !_vm.update
+            !_vm.update_btn
               ? _c(
                   "button",
                   {
@@ -60083,14 +60184,18 @@ var render = function() {
                 )
               : _vm._e(),
             _vm._v(" "),
-            _vm.update
+            _vm.update_btn
               ? _c(
                   "button",
                   {
-                    staticClass: "btn btn-warning",
+                    staticClass: "btn",
+                    class: {
+                      "btn-warning": !_vm.change_btn,
+                      "btn-success": _vm.change_btn
+                    },
                     on: { click: _vm.modified_data }
                   },
-                  [_vm._v("Modificar")]
+                  [_vm._v(_vm._s(_vm.tittle_btn))]
                 )
               : _vm._e()
           ]),
@@ -60136,7 +60241,8 @@ var render = function() {
       _vm._v(" "),
       _vm.show_request_credit
         ? _c("request-credit-card-pop-up", {
-            attrs: { data: _vm.show_request_credit_data }
+            attrs: { data: _vm.show_request_credit_data },
+            on: { close_request_card: _vm.close_request_credit_card }
           })
         : _vm._e()
     ],
@@ -60195,7 +60301,8 @@ var render = function() {
         { staticClass: "pop-up" },
         [
           _c("request-credit-card", {
-            attrs: { data_props: _vm.data, update_props: true }
+            attrs: { data_props: _vm.data, update_props: true },
+            on: { close_request_credit_card: _vm.close_request_card }
           })
         ],
         1
@@ -60570,34 +60677,87 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    { staticClass: "container" },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _vm.request_debit_card_show
+        ? _c("requestDebitCardPopUp", {
+            attrs: { data: _vm.request_debit_card_data }
+          })
+        : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("table", { staticClass: "tableBP", attrs: { id: "table_id" } }, [
-        _c("thead", [
-          _c("tr", [
-            _c("th", [_vm._v("#")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("NOMBRE")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("APELLIDOS")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("DNI")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("FECHA")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("ACCIÓN")])
-          ])
+    return _c("table", { staticClass: "tableBP", attrs: { id: "table_id" } }, [
+      _c("thead", [
+        _c("tr", [
+          _c("th", [_vm._v("#")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("NOMBRE")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("APELLIDOS")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("DNI")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("CUENTA")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Nro TARJETA")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("FECHA")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("ACCIÓN")])
         ])
       ])
     ])
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a&":
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a& ***!
+  \******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "waiting-result" }, [
+    _c("div", { staticClass: "waiting-result-container" }, [
+      _c(
+        "div",
+        { staticClass: "pop-up" },
+        [
+          _c("request-debit-card", {
+            attrs: { data_props: _vm.data, update_props: true },
+            on: { close_request_credit_card: _vm.close_request_card }
+          })
+        ],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -80295,6 +80455,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_vue_vue_type_template_id_e6cbce56___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_vue_vue_type_template_id_e6cbce56___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue":
+/*!*****************************************************************!*\
+  !*** ./resources/js/components/RequestDebitCardShow_Pop_Up.vue ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a& */ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a&");
+/* harmony import */ var _RequestDebitCardShow_Pop_Up_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js& */ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _RequestDebitCardShow_Pop_Up_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/RequestDebitCardShow_Pop_Up.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_Pop_Up_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_Pop_Up_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a& ***!
+  \************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RequestDebitCardShow_Pop_Up.vue?vue&type=template&id=21383b3a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RequestDebitCardShow_Pop_Up_vue_vue_type_template_id_21383b3a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

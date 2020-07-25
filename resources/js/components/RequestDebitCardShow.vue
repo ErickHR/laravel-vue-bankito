@@ -8,25 +8,43 @@
                     <th>NOMBRE</th>
                     <th>APELLIDOS</th>
                     <th>DNI</th>
+                    <th>CUENTA</th>
+                    <th>Nro TARJETA</th>
                     <th>FECHA</th>
                     <th>ACCIÓN</th>
                 </tr>
             </thead>
         </table>
+        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data"></requestDebitCardPopUp>
     </div>
 
 </template>
 
 <script>
+import requestDebitCardPopUp from './RequestDebitCardShow_Pop_Up.vue'
 export default {
+    components:{
+        requestDebitCardPopUp
+    },
     data: function(){
         return {
+            request_debit_card_data : "",
+            request_debit_card_show : false
         }
     },
     methods:{
         show( table ){
+            let _this = this
             $( "button.show" ).on('click', "", function(){
                 let data = table.row( $(this).parents( 'tr' ) ).data()
+                axios.get(`account/${data.id}`)
+                    .then( res => {
+                        _this.request_debit_card_data = {...res.data}
+                        _this.request_debit_card_show = true
+                    } )
+                    .catch( e => {
+                        console.log(e)
+                    } )
             })
         }
     },
@@ -36,7 +54,7 @@ export default {
          $(document).ready( function () {
             table = $('#table_id').DataTable( {
                 ajax:{
-                    url:'/request-debit-cards-show'
+                    url:'/account-debit'
                 },
                 columns:[
                     { data : 'id' },
@@ -48,35 +66,22 @@ export default {
                         }
                     },
                     { data:"person.document_number" },
+                    { data:"account_number" },
+                    { data:"card.card_number" },
                     { data:"created_at" },
                     {
                         data:null,
                         render : function ( data ) {
-                            
                             if ( data.request == 'ver' )
                                 return `
                                         <div style = " width : fit-content; margin : 0 auto ">
                                             <button class="btn btn-success show">Mostrar</button>
-                                            <button class="btn btn-info show">Aprobar</button>
-                                            <button class="btn btn-warning show">Desaprobar</button>
-                                        </div>
-                                    `
-                            if ( data.request == 'aprobado' )
-                                return `
-                                        <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-primary show">Aprobado</button>
-                                        </div>
-                                    `
-                            if ( data.request == 'desaprobado' )
-                                return `
-                                        <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-danger show">Desaprobado</button>
                                         </div>
                                     `
                              
                              return `
                                         <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-link red show">Vacío</button>
+                                            <button class="btn btn-link red">Vacío</button>
                                         </div>
                                     `
                                 
@@ -113,7 +118,9 @@ export default {
                 }
                 }  )
                  
-            _this.show( table )
+            table.on('click', function(){
+                _this.show( table )
+            })
 
             } )
         

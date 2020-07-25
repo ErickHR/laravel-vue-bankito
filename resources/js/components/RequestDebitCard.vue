@@ -76,6 +76,9 @@
         components:{
             Appwaiting
         },
+        props:[
+            'data_props'
+        ],
         data: function() {
             return {
                 data : {
@@ -121,6 +124,10 @@
             }
         },
         mounted(){
+            if( this.data_props ){
+                this.data = this.data_props.person
+            }
+            
         }
     }
 </script>

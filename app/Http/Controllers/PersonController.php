@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Person;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PersonController extends Controller
@@ -40,13 +41,23 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        // try {
+        try {
+            $request["request"] = "ver";
+            $request["account_number"] = '10'.$request->document_number.( $request->type == "credit"? "TC":"TD" );
+            $request["amount"] = 0;
+            $request["account_type_id"] = -1;
             $person = Person::create( $request->all() );
-            $person->request_card()->create( $request->all() );
+            $account = $person->account()->create( $request->all() );
+            if( $request->type == "debit" ){
+                $request['expired_date'] = Carbon::now()->addYears(4)->format('Y-m-d');
+                $request["card_number"] = '1080'.$request->document_number.'1793';
+                $request["CVC"] = '1111';
+                $account->card()->create( $request->all() );
+            }
             return response( [ "response" => true ] );
-        // } catch (\Throwable $th) {
-        //     return response( [ "response" => false, "e"=>$th ] );
-        // }
+        } catch (\Throwable $th) {
+            return response( [ "response" => false, "e"=>$th ] );
+        }
     }
 
     /**
