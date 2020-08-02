@@ -15,7 +15,7 @@
                 </tr>
             </thead>
         </table>
-        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data"></requestDebitCardPopUp>
+        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data" @close_request_debit_card="request_debit_card_show=false"></requestDebitCardPopUp>
     </div>
 
 </template>

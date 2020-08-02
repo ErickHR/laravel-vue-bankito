@@ -2930,14 +2930,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     Appwaiting: _utils_waiting_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['data_props'],
+  props: ['data_props', 'is_pop_up'],
   data: function data() {
     return {
+      disabled_input: false,
+      show_btn_pop_up: false,
+      save_btn_pop_up: false,
+      title_btn_pop_up: "",
       data: {
         document_type: "",
         address: "",
@@ -2957,6 +2962,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
+    modified_data: function modified_data() {
+      var _this = this;
+
+      if (this.disabled_input) {
+        this.disabled_input = false;
+        this.title_btn_pop_up = "Guardar", this.save_btn_pop_up = true;
+      } else {
+        var _this2 = this;
+
+        var body = _objectSpread({}, this.data);
+
+        body.cell = JSON.stringify(this.data.cell);
+        this.show_wainting = true;
+        axios.put("people/".concat(_this2.data.id), body).then(function (res) {
+          res.data.response ? _this2.showSwal({
+            tittle: "Guardado!",
+            type: "success"
+          }) : _this2.showSwal({
+            tittle: "No s\xE9 Guardado! ".concat(res.data.e),
+            type: "error"
+          });
+
+          _this2.$emit('close_request_debit_card');
+        })["catch"](function (e) {
+          _this2.showSwal({
+            tittle: "".concat(e),
+            type: "warning"
+          });
+        });
+      }
+    },
     showSwal: function showSwal(msg) {
       this.show_wainting = false;
       Swal.fire(msg.tittle, '', msg.type);
@@ -2987,6 +3023,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   mounted: function mounted() {
     if (this.data_props) {
       this.data = this.data_props.person;
+    }
+
+    if (this.is_pop_up) {
+      this.show_btn_pop_up = true;
+      this.title_btn_pop_up = "Modificar", this.disabled_input = true;
     }
   }
 });
@@ -3159,7 +3200,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     close_request_card: function close_request_card() {
-      this.$emit('close_request_card');
+      this.$emit('close_request_debit_card');
     }
   },
   mounted: function mounted() {}
@@ -60349,6 +60390,7 @@ var render = function() {
               _c("v-select", {
                 staticClass: "bg-white ",
                 attrs: {
+                  disabled: _vm.disabled_input,
                   options: ["dni", "Pasaporte", "Carnet de Extranjeria"],
                   label: "document_type",
                   placeholder: "Tipo de Documento"
@@ -60380,7 +60422,12 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "number", name: "dni", placeholder: "Documento" },
+              attrs: {
+                type: "number",
+                disabled: _vm.disabled_input,
+                name: "dni",
+                placeholder: "Documento"
+              },
               domProps: { value: _vm.data.document_number },
               on: {
                 input: function($event) {
@@ -60412,6 +60459,7 @@ var render = function() {
               staticClass: "form-control",
               attrs: {
                 type: "text",
+                disabled: _vm.disabled_input,
                 name: "name",
                 id: "name",
                 placeholder: "Nombre"
@@ -60438,24 +60486,25 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.data.mother_last_name,
-                  expression: "data.mother_last_name"
+                  value: _vm.data.father_last_name,
+                  expression: "data.father_last_name"
                 }
               ],
               staticClass: "form-control",
               attrs: {
                 type: "text",
+                disabled: _vm.disabled_input,
                 name: "mother_last_name",
                 id: "mother_last_name",
                 placeholder: "Apellido Paterno"
               },
-              domProps: { value: _vm.data.mother_last_name },
+              domProps: { value: _vm.data.father_last_name },
               on: {
                 input: function($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.$set(_vm.data, "mother_last_name", $event.target.value)
+                  _vm.$set(_vm.data, "father_last_name", $event.target.value)
                 }
               }
             })
@@ -60471,24 +60520,25 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.data.father_last_name,
-                  expression: "data.father_last_name"
+                  value: _vm.data.mother_last_name,
+                  expression: "data.mother_last_name"
                 }
               ],
               staticClass: "form-control",
               attrs: {
                 type: "text",
+                disabled: _vm.disabled_input,
                 name: "father_last_name",
                 id: "father_last_name",
                 placeholder: "Apellido Materno"
               },
-              domProps: { value: _vm.data.father_last_name },
+              domProps: { value: _vm.data.mother_last_name },
               on: {
                 input: function($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.$set(_vm.data, "father_last_name", $event.target.value)
+                  _vm.$set(_vm.data, "mother_last_name", $event.target.value)
                 }
               }
             })
@@ -60515,6 +60565,7 @@ var render = function() {
               staticClass: "form-control",
               attrs: {
                 type: "number",
+                disabled: _vm.disabled_input,
                 name: "movil_phone_one",
                 id: "movil_phone_one",
                 placeholder: "Celular"
@@ -60552,6 +60603,7 @@ var render = function() {
               staticClass: "form-control",
               attrs: {
                 type: "number",
+                disabled: _vm.disabled_input,
                 name: "movil_phone_two",
                 id: "movil_phone_two",
                 placeholder: "celular(opcional)"
@@ -60587,6 +60639,7 @@ var render = function() {
               staticClass: "form-control",
               attrs: {
                 type: "number",
+                disabled: _vm.disabled_input,
                 name: "phone",
                 id: "phone",
                 placeholder: "Teléfono"
@@ -60616,6 +60669,7 @@ var render = function() {
               _c("v-select", {
                 staticClass: "bg-white ",
                 attrs: {
+                  disabled: _vm.disabled_input,
                   options: ["Masculino", "Femenino"],
                   label: "gender",
                   placeholder: "Género"
@@ -60636,14 +60690,34 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "form-group" }, [
         _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-10" }),
+          _c("div", { staticClass: "col-9" }),
           _vm._v(" "),
-          _c("div", { staticClass: "col-1" }, [
-            _c(
-              "button",
-              { staticClass: "btn btn-primary", on: { click: _vm.register } },
-              [_vm._v("Registrar")]
-            )
+          _c("div", { staticClass: "col-2" }, [
+            !_vm.show_btn_pop_up
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: { click: _vm.register }
+                  },
+                  [_vm._v("Registrar")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.show_btn_pop_up
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn",
+                    class: {
+                      "btn-success": _vm.save_btn_pop_up,
+                      "btn-warning": !_vm.save_btn_pop_up
+                    },
+                    on: { click: _vm.modified_data }
+                  },
+                  [_vm._v(_vm._s(_vm.title_btn_pop_up))]
+                )
+              : _vm._e()
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-1" })
@@ -60685,7 +60759,12 @@ var render = function() {
       _vm._v(" "),
       _vm.request_debit_card_show
         ? _c("requestDebitCardPopUp", {
-            attrs: { data: _vm.request_debit_card_data }
+            attrs: { data: _vm.request_debit_card_data },
+            on: {
+              close_request_debit_card: function($event) {
+                _vm.request_debit_card_show = false
+              }
+            }
           })
         : _vm._e()
     ],
@@ -60748,8 +60827,12 @@ var render = function() {
         { staticClass: "pop-up" },
         [
           _c("request-debit-card", {
-            attrs: { data_props: _vm.data, update_props: true },
-            on: { close_request_credit_card: _vm.close_request_card }
+            attrs: {
+              is_pop_up: true,
+              data_props: _vm.data,
+              update_props: true
+            },
+            on: { close_request_debit_card: _vm.close_request_card }
           })
         ],
         1

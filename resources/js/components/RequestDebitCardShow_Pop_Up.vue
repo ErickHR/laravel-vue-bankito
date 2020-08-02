@@ -2,7 +2,7 @@
     <div class="waiting-result">
         <div class="waiting-result-container">
             <div class="pop-up">
-                <request-debit-card :data_props="data" :update_props="true" @close_request_credit_card="close_request_card"></request-debit-card>
+                <request-debit-card :is_pop_up="true" :data_props="data" :update_props="true" @close_request_debit_card="close_request_card"></request-debit-card>
             </div>
         </div>
     </div>
@@ -25,7 +25,7 @@ export default {
     },
     methods:{
         close_request_card(){
-            this.$emit( 'close_request_card' )
+            this.$emit( 'close_request_debit_card' )
         }
     },
     mounted(){
