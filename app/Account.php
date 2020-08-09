@@ -13,6 +13,8 @@ class Account extends Model
         'account_type_id',
         'person_id',
         'type',
+        'range_degreet_credit',
+        'degreet_credit',
         'request'
     ];
 

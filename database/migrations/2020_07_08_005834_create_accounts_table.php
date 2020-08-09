@@ -8,7 +8,7 @@ class CreateAccountsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     *  
      * @return void
      */
     public function up()
@@ -20,6 +20,8 @@ class CreateAccountsTable extends Migration
             $table->string('account_type_id');
             $table->string('person_id');
             $table->string('type');
+            $table->string('range_degreet_credit')->nullable();
+            $table->float('degreet_credit')->nullable();
             $table->string('request');
             $table->timestamps();
         });

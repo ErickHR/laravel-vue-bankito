@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\Person;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -69,7 +71,17 @@ class AccountController extends Controller
      */
     public function update(Request $request, Account $account)
     {
-        //
+       try {
+           $person = Person::where('id', '=', $account->person_id )->first();
+           $account->update( $request->all() );
+           $request['expired_date'] = Carbon::now()->addYears(4)->format('Y-m-d');
+           $request["card_number"] = '1080'.$person->document_number.'1793';
+           $request["CVC"] = '1111';
+           $account->card()->create( $request->all() );
+           return response( [ "response" => true ] );
+       } catch (\Throwable $th) {
+           return response( [ "response" => false, "e"=>$th ] );
+       }
     }
 
     /**
@@ -89,7 +101,7 @@ class AccountController extends Controller
     }
 
     public function request_credit(){
-        $request_credit = Account::with( 'person' )->where( 'type', 'credit' )->get();
+        $request_credit = Account::with( ['person', 'card'] )->where( 'type', 'credit' )->get();
         return response( [ "data" => $request_credit ] );
     }
 

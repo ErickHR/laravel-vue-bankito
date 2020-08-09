@@ -42,7 +42,7 @@ class PersonController extends Controller
     public function store(Request $request)
     {
         try {
-            $request["request"] = "ver";
+            $request["request"] = $request->type == "credit"? "Ver":"Aprobado";
             $request["account_number"] = '10'.$request->document_number.( $request->type == "credit"? "TC":"TD" );
             $request["amount"] = 0;
             $request["account_type_id"] = -1;

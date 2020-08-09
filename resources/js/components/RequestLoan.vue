@@ -4,16 +4,12 @@
         <div class="form-group">
             <div class="row">
                 <div class="col">
-                    <label for="tipoDoc">Tipo de Documento</label>
-                    <select class="form-control" name="tipoDoc" id="tipoDoc">
-                        <option value="dni" selected>DNI</option>
-                        <option value="pasaporte">Pasaporte</option>
-                        <option value="carnet">Carnet de Extranjeria</option>
-                    </select>
+                    <label for="document_type">Tipo de Documento</label>
+                    <v-select class="bg-white " :options="[ 'dni', 'Pasaporte', 'Carnet de Extranjeria' ]" label='document_type' placeholder="Tipo de Documento"></v-select>
                 </div>
                 <div class="col">
                     <label for="dni">Dni</label>
-                    <input type="text" name="dni" class="form-control" placeholder="Documento">
+                    <input type="text" name="dni" class="form-control" placeholder="Dni">
                 </div>
             </div>
         </div>
@@ -37,22 +33,13 @@
         <div class="form-group">
             <div class="row">
                 <div class="col">
-                    <span> Fecha de Nacimiento </span>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" name="name" id="name" class="form-control" placeholder="Nombre">
-                        </div>
-                        <div class="col">
-                            <input type="text" name="name" id="name" class="form-control" placeholder="Nombre">
-                        </div>
-                        <div class="col">
-                            <input type="text" name="name" id="name" class="form-control" placeholder="Nombre">
-                        </div>
-                    </div>
+                    <label for="date_of_birth"> Fecha de Nacimiento </label>
+                    <datepicker :language="es" :disabled-dates="disabledDates" name="date_of_birth" v-model="data.date_of_birth" ></datepicker>
+                    
                 </div>
                 <div class="col">
-                    <label for="mother_last_name">Género</label>
-                    <input type="text" name="mother_last_name" id="mother_last_name" class="form-control" placeholder="Apellido Paterno">
+                    <label for="document_type">Tipo de Documento</label>
+                    <v-select class="bg-white " :disabled="update" :options="[ 'Maxculino', 'Femenino' ]" v-model="data.document_type" label='document_type' placeholder="Tipo de Documento"></v-select>
                 </div>
                 <div class="col">
                     <label for="father_last_name">País de Nacimiento</label>
@@ -141,18 +128,7 @@
                 </div>
                 <div class="col">
                     <label for="movil_phone_one">Meses</label>
-                    <select class="form-control" name="tipoDoc" id="meses">
-                            <option value="0" selected>2 meses</option>
-                            <option value="1">3 meses</option>
-                            <option value="2">4 meses</option>
-                            <option value="3">6 meses</option>
-                            <option value="4">12 meses</option>
-                            <option value="5">18 meses</option>
-                            <option value="6">24 meses</option>
-                            <option value="7">36 meses</option>
-                            <option value="8">48 meses</option>
-                            <option value="9">60 meses</option>
-                        </select>
+                    <v-select class="bg-white " :options="[ '1 mes', '2 mes', '3 mes', '4 mes', '5 mes', '6 mes', '7 mes', '8 mes', '9 mes', '10 mes', '11 mes', '12 mes']" label='gender' placeholder="Monto"></v-select>
                 </div>
                 <div class="col">
                     <label for="movil_phone_one">Monto Mensual</label>
@@ -201,7 +177,25 @@
 
 <script>
     export default {
+        data:function(){
+            return{
+                es:language,
+                disabledDates:{
+                    from: this.authorizedDate()
+                },
+                data : {
+                    date_of_birth : this.authorizedDate()
+                }
+            }
+        },
+        methods:{
+            authorizedDate(){
+                let current = new Date()
+                return new Date( current.getFullYear() - 20 , current.getMonth(), current.getDay() )
+            }
+        },
         mounted(){
+            $(".vdp-datepicker input").css({'border': '1px solid #ced4da', 'border-radius' : '4px', 'color':'#495057', 'height':'38px'})
 
         }
     }

@@ -1,6 +1,21 @@
 <template>
     
     <div class="container">
+        <div class="mt-4 mb-4">
+            <div class="row bg-01 pt-2 pb-3">
+                <div class="col">
+                    <label for="date_of_birth"> Desde </label>
+                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.from" ></datepicker>
+                </div>
+                <div class="col">
+                    <label for="date_of_birth"> Hasta </label>
+                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.to" ></datepicker>
+                </div>
+                <div class="col">
+                    <div class="mt-4"><button class="btn btn-success" @click="searchByDate">BUSCAR</button></div>
+                </div>
+            </div>
+        </div>
         <table id="table_id" class="tableBP">
             <thead>
                 <tr>
@@ -15,7 +30,7 @@
                 </tr>
             </thead>
         </table>
-        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data" @close_request_debit_card="request_debit_card_show=false"></requestDebitCardPopUp>
+        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data" @close_request_debit_card="close_request_debit_cards"></requestDebitCardPopUp>
     </div>
 
 </template>
@@ -28,11 +43,31 @@ export default {
     },
     data: function(){
         return {
+            data:{
+                from : this.authorizedDate(),
+                to   : this.authorizedDate(),
+
+            },
             request_debit_card_data : "",
-            request_debit_card_show : false
+            request_debit_card_show : false,
+            table : "",
+            es: language,
+            disabledDates:{
+                    from : this.authorizedDate()
+                },
         }
     },
     methods:{
+        searchByDate(){
+        },
+        authorizedDate(){
+            let current = new Date()
+            return current
+        },
+        close_request_debit_cards(){
+            this.request_debit_card_show=false
+            this.table.ajax.reload();
+        },
         show( table ){
             let _this = this
             $( "button.show" ).on('click', "", function(){
@@ -50,9 +85,8 @@ export default {
     },
     mounted(){
         let _this = this
-        let table
          $(document).ready( function () {
-            table = $('#table_id').DataTable( {
+            _this.table = $('#table_id').DataTable( {
                 ajax:{
                     url:'/account-debit'
                 },
@@ -72,10 +106,10 @@ export default {
                     {
                         data:null,
                         render : function ( data ) {
-                            if ( data.request == 'ver' )
+                            if ( data.request == 'Aprobado' )
                                 return `
                                         <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-success show">Mostrar</button>
+                                            <button class="btn btn-success show"><i class="far fa-eye"></i></button>
                                         </div>
                                     `
                              
@@ -118,11 +152,11 @@ export default {
                 }
                 }  )
                  
-            table.on('click', function(){
-                _this.show( table )
+            _this.table.on('click', function(){
+                _this.show( _this.table )
             })
 
-            } )
+        } )
         
     }
 }

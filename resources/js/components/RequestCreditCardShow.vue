@@ -8,6 +8,8 @@
                     <th>NOMBRE</th>
                     <th>APELLIDOS</th>
                     <th>DNI</th>
+                    <th>CUENTA</th>
+                    <th>Nro TARJETA</th>
                     <th>FECHA</th>
                     <th>ACCIÓN</th>
                 </tr>
@@ -31,18 +33,20 @@ export default {
         return {
             show_waiting : false,
             show_request_credit_data : "",
-            show_request_credit : false
+            show_request_credit : false,
+            table : ''
         }
     },
     methods:{
         close_request_credit_card(){
             this.show_request_credit = false
+            this.table.ajax.reload();
         },
         show( table ){
             let _this = this
             $( "button.show" ).on('click', function(){
                 let data = table.row( $(this).parents( 'tr' ) ).data()
-                axios.get( `request-cards/${data.id}` )
+                axios.get( `/account/${data.id}` )
                     .then( res => {
 
                         _this.show_request_credit_data = res.data.person
@@ -64,22 +68,21 @@ export default {
         },
         btn_approve_disapprove( btn ){
 
-            if ( btn == "aprobado" ) {
+            if ( btn == "Aprobado" ) {
                 return `
                         <div style = " width : fit-content; margin : 0 auto ">
-                            <button class="btn btn-primary">Aprobado</button>
+                            <button class="btn btn-primary"><i class="fas fa-check"></i></button>
                         </div>
                     `
             }
 
-            if ( btn == "desaprobado" ) {
+            if ( btn == "Desaprobado" ) {
                 return  `
                     <div style = " width : fit-content; margin : 0 auto ">
-                        <button class="btn btn-danger show">Desaprobado</button>
+                        <button class="btn btn-danger show"><i class="fas fa-times"></i></button>
                     </div>
                 `
             }
-                                        
             
         },
         approve_disapprove(table){
@@ -88,14 +91,18 @@ export default {
                 _this.show_waiting = true
 
                 let data = table.row( $(this).parents( 'tr' ) ).data()
-                
                 let div_father = btn.target.parentElement
-                $( div_father ).html( _this.btn_approve_disapprove(btn.target.dataset.request) )
                 
                 data.request = btn.target.dataset.request
-                axios.put(`request-cards/${data.id}`, data).
+                axios.put(`account/${data.id}`, data).
                     then( res => {
-                        res.data.response? _this.showSwal( { tittle:"Guardado!", type:"success" } ) : _this.showSwal( { tittle: `No sé Guardado! ${res.data.e}` , type:"error" } )
+                        if ( res.data.response ){
+                            _this.showSwal( { tittle:"Guardado!", type:"success" } )
+                            $( div_father ).html( _this.btn_approve_disapprove(btn.target.dataset.request) )
+                        } else {
+                            _this.showSwal( { tittle: `No sé Guardado! ${res.data.e}` , type:"error" } )
+                        }
+                
                     } )
                     .catch( e =>{
                         _this.showSwal( { tittle:`${e}`, type:"warning" } )
@@ -107,11 +114,10 @@ export default {
         
         this.show_waiting = false
         let _this = this
-            let table
-            table = $('#table_id').DataTable( {
+        this.table = $('#table_id').DataTable( {
                     destroy:true,
                     ajax:{
-                        url:'/request-credit-cards-show'
+                        url:'/account-credit'
                     },
                     columns:[
                         { data : 'id' },
@@ -123,24 +129,44 @@ export default {
                             }
                         },
                         { data:"person.document_number" },
+                        { data:"account_number" },
+                        // { data:"card.card_number" },
+                        {
+                            data:null,
+                            render : function ( data ) {
+                                // console.log()
+                                if ( data.card )
+                                    return `
+                                            <div style = " width : fit-content; margin : 0 auto ">
+                                                <button class="btn btn-link red">${data.card.card_number}</button>
+                                            </div>
+                                        `
+                                return `
+                                            <div style = " width : fit-content; margin : 0 auto ">
+                                                <button class="btn btn-link red">Vacío</button>
+                                            </div>
+                                        `
+                                    
+                            }
+                        },
                         { data:"created_at" },
                         {
                             data:null,
                             render : function ( data ) {
                                 
-                                if ( data.request == 'ver' )
+                                if ( data.request == 'Ver' )
                                     return `
                                             <div style = " width : fit-content; margin : 0 auto ">
-                                                <button class="btn btn-success show">Mostrar</button>
-                                                <button class="btn btn-info approveDisapprove" data-request="aprobado">Aprobar</button>
-                                                <button class="btn btn-warning approveDisapprove" data-request="desaprobado">Desaprobar</button>
+                                                <button class="btn btn-success show"><i class="far fa-eye"></i></button>
+                                                <button class="btn btn-info approveDisapprove" data-request="Aprobado"><i class="far fa-thumbs-up"></i></button>
+                                                <button class="btn btn-warning approveDisapprove" data-request="Desaprobado"><i class="far fa-thumbs-down"></i></button>
                                             </div>
                                         `
-                                if ( data.request == 'aprobado' )
-                                    return _this.btn_approve_disapprove( 'aprobado' )
+                                if ( data.request == 'Aprobado' )
+                                    return _this.btn_approve_disapprove( 'Aprobado' )
 
-                                if ( data.request == 'desaprobado' )
-                                    return _this.btn_approve_disapprove( 'desaprobado' )
+                                if ( data.request == 'Desaprobado' )
+                                    return _this.btn_approve_disapprove( 'Desaprobado' )
 
                                 
                                 return `
@@ -183,9 +209,9 @@ export default {
                     }  
                 )
 
-            table.on( 'draw', function () {
-                _this.show( table )
-                _this.approve_disapprove(table)
+            _this.table.on( 'draw', function () {
+                _this.show( _this.table )
+                _this.approve_disapprove( _this.table)
                 
             } );
         

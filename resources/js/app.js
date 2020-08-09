@@ -31,9 +31,12 @@ import datables from 'datatables'
 import Swal from 'sweetalert2'
 import waitingDialog from 'bootstrap-waitingfor'
 import datepicker from 'js-datepicker'
-import vDatepicker from 'vuejs-datepicker';
-import vSelect from "vue-select";
+import vDatepicker from 'vuejs-datepicker'
+import vSelect from "vue-select"
 import language from "../../node_modules/vuejs-datepicker/dist/locale/translations/es";
+
+
+import regex from './utils/regex.js'
 
 Vue.component('datepicker', vDatepicker ) ;
 Vue.component('v-select', vSelect ) ;
@@ -43,6 +46,7 @@ window.Swal = Swal
 window.waitingDialog = waitingDialog
 window.datepicker = datepicker
 window.language = language
+window.regex = new regex()
 
 
 /*

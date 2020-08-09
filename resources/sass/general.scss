@@ -11,8 +11,18 @@
     font-weight: bold;
 }
 
-
-
+.error-input{
+    border: solid 1px red
+}
+.error-msg{
+    color:red
+}
+.close{
+    position: absolute;
+    left: 77%;
+    top: 19%;
+    font-size: 30px;
+}
 
 
 .form-control:disabled{

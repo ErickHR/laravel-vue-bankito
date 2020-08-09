@@ -1,7 +1,7 @@
 <template>
     <div class="waiting-result">
         <div class="waiting-result-container">
-            <div class="pop-up">
+            <div class="pop-up p-4">
                 <request-debit-card :is_pop_up="true" :data_props="data" :update_props="true" @close_request_debit_card="close_request_card"></request-debit-card>
             </div>
         </div>
@@ -29,7 +29,13 @@ export default {
         }
     },
     mounted(){
-        
+        let _this = this
+        $('.waiting-result').on('click', ( e ) => {
+            if( e.target.className == 'waiting-result-container' || e.target.className == 'waiting-result' ){
+                _this.close_request_card()
+            }
+        } )
+
     }
 
 }

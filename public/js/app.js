@@ -2533,7 +2533,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         },
         employment: "",
         salary: "",
-        degreet_credit: "",
+        range_degreet_credit: "",
         type: "credit"
       },
       disabledDates: {
@@ -2661,6 +2661,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2672,19 +2674,21 @@ __webpack_require__.r(__webpack_exports__);
     return {
       show_waiting: false,
       show_request_credit_data: "",
-      show_request_credit: false
+      show_request_credit: false,
+      table: ''
     };
   },
   methods: {
     close_request_credit_card: function close_request_credit_card() {
       this.show_request_credit = false;
+      this.table.ajax.reload();
     },
     show: function show(table) {
       var _this = this;
 
       $("button.show").on('click', function () {
         var data = table.row($(this).parents('tr')).data();
-        axios.get("request-cards/".concat(data.id)).then(function (res) {
+        axios.get("/account/".concat(data.id)).then(function (res) {
           _this.show_request_credit_data = res.data.person;
           _this.show_request_credit_data.cell = JSON.parse(res.data.person.cell);
           _this.show_request_credit_data.address = JSON.parse(res.data.person.address);
@@ -2697,12 +2701,12 @@ __webpack_require__.r(__webpack_exports__);
       Swal.fire(msg.tittle, '', msg.type);
     },
     btn_approve_disapprove: function btn_approve_disapprove(btn) {
-      if (btn == "aprobado") {
-        return "\n                        <div style = \" width : fit-content; margin : 0 auto \">\n                            <button class=\"btn btn-primary\">Aprobado</button>\n                        </div>\n                    ";
+      if (btn == "Aprobado") {
+        return "\n                        <div style = \" width : fit-content; margin : 0 auto \">\n                            <button class=\"btn btn-primary\"><i class=\"fas fa-check\"></i></button>\n                        </div>\n                    ";
       }
 
-      if (btn == "desaprobado") {
-        return "\n                    <div style = \" width : fit-content; margin : 0 auto \">\n                        <button class=\"btn btn-danger show\">Desaprobado</button>\n                    </div>\n                ";
+      if (btn == "Desaprobado") {
+        return "\n                    <div style = \" width : fit-content; margin : 0 auto \">\n                        <button class=\"btn btn-danger show\"><i class=\"fas fa-times\"></i></button>\n                    </div>\n                ";
       }
     },
     approve_disapprove: function approve_disapprove(table) {
@@ -2712,16 +2716,21 @@ __webpack_require__.r(__webpack_exports__);
         _this.show_waiting = true;
         var data = table.row($(this).parents('tr')).data();
         var div_father = btn.target.parentElement;
-        $(div_father).html(_this.btn_approve_disapprove(btn.target.dataset.request));
         data.request = btn.target.dataset.request;
-        axios.put("request-cards/".concat(data.id), data).then(function (res) {
-          res.data.response ? _this.showSwal({
-            tittle: "Guardado!",
-            type: "success"
-          }) : _this.showSwal({
-            tittle: "No s\xE9 Guardado! ".concat(res.data.e),
-            type: "error"
-          });
+        axios.put("account/".concat(data.id), data).then(function (res) {
+          if (res.data.response) {
+            _this.showSwal({
+              tittle: "Guardado!",
+              type: "success"
+            });
+
+            $(div_father).html(_this.btn_approve_disapprove(btn.target.dataset.request));
+          } else {
+            _this.showSwal({
+              tittle: "No s\xE9 Guardado! ".concat(res.data.e),
+              type: "error"
+            });
+          }
         })["catch"](function (e) {
           _this.showSwal({
             tittle: "".concat(e),
@@ -2736,11 +2745,10 @@ __webpack_require__.r(__webpack_exports__);
 
     var _this = this;
 
-    var table;
-    table = $('#table_id').DataTable({
+    this.table = $('#table_id').DataTable({
       destroy: true,
       ajax: {
-        url: '/request-credit-cards-show'
+        url: '/account-credit'
       },
       columns: [{
         data: 'id'
@@ -2754,13 +2762,23 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         data: "person.document_number"
       }, {
+        data: "account_number"
+      }, // { data:"card.card_number" },
+      {
+        data: null,
+        render: function render(data) {
+          // console.log()
+          if (data.card) return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-link red\">".concat(data.card.card_number, "</button>\n                                            </div>\n                                        ");
+          return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                            </div>\n                                        ";
+        }
+      }, {
         data: "created_at"
       }, {
         data: null,
         render: function render(data) {
-          if (data.request == 'ver') return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-success show\">Mostrar</button>\n                                                <button class=\"btn btn-info approveDisapprove\" data-request=\"aprobado\">Aprobar</button>\n                                                <button class=\"btn btn-warning approveDisapprove\" data-request=\"desaprobado\">Desaprobar</button>\n                                            </div>\n                                        ";
-          if (data.request == 'aprobado') return _this.btn_approve_disapprove('aprobado');
-          if (data.request == 'desaprobado') return _this.btn_approve_disapprove('desaprobado');
+          if (data.request == 'Ver') return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-success show\"><i class=\"far fa-eye\"></i></button>\n                                                <button class=\"btn btn-info approveDisapprove\" data-request=\"Aprobado\"><i class=\"far fa-thumbs-up\"></i></button>\n                                                <button class=\"btn btn-warning approveDisapprove\" data-request=\"Desaprobado\"><i class=\"far fa-thumbs-down\"></i></button>\n                                            </div>\n                                        ";
+          if (data.request == 'Aprobado') return _this.btn_approve_disapprove('Aprobado');
+          if (data.request == 'Desaprobado') return _this.btn_approve_disapprove('Desaprobado');
           return "\n                                            <div style = \" width : fit-content; margin : 0 auto \">\n                                                <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                            </div>\n                                        ";
         }
       }],
@@ -2793,10 +2811,11 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     });
-    table.on('draw', function () {
-      _this.show(table);
 
-      _this.approve_disapprove(table);
+    _this.table.on('draw', function () {
+      _this.show(_this.table);
+
+      _this.approve_disapprove(_this.table);
     });
   }
 });
@@ -2931,6 +2950,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2943,6 +2970,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       show_btn_pop_up: false,
       save_btn_pop_up: false,
       title_btn_pop_up: "",
+      msg_data: {
+        document_type: "",
+        address: "",
+        document_number: "",
+        name: "",
+        mother_last_name: "",
+        father_last_name: "",
+        type: "",
+        gender: "",
+        cell: {
+          movil_phone_one: "",
+          movil_phone_two: "",
+          phone: ""
+        }
+      },
+      error_data: {
+        document_type: false,
+        address: false,
+        document_number: false,
+        name: false,
+        mother_last_name: false,
+        father_last_name: false,
+        type: false,
+        gender: false,
+        cell: {
+          movil_phone_one: false,
+          movil_phone_two: false,
+          phone: false
+        }
+      },
       data: {
         document_type: "",
         address: "",
@@ -2951,7 +3008,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         mother_last_name: "",
         father_last_name: "",
         type: "debit",
-        genero: "",
+        gender: "",
         cell: {
           movil_phone_one: "",
           movil_phone_two: "",
@@ -2962,6 +3019,63 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
+    validate_opcional: function validate_opcional() {// for( let cell in this.data.cell ){
+      //     if( this.data.cell[cell] != "" && !regex.aloneCell( this.data.cell[cell])){
+      //          this.error_data.cell[cell] = true
+      //         this.msg_data.cell[cell] = 'Solo 9 digitos'
+      //     }
+      // }
+    },
+    is_correct: function is_correct() {// let _this = this
+      // let all_false = false
+      // for( let element in _this.data ){
+      //     if( element == 'cell' ){
+      //         for( let element_cell in _this.data.cell){
+      //             if( _this.error_data.cell[element_cell] && _this.data.cell[element_cell] != 'movil_phone_two' && _this.data.cell[element_cell] != 'phone' )
+      //                 return true
+      //         }
+      //     }else{
+      //        if( _this.error_data[element] )
+      //                 return true
+      //     }
+      // }
+      // return false
+    },
+    validate: function validate() {// let _this = this
+      // for( let element in _this.data ){
+      //     if( element == 'cell' ){
+      //         for( let element_cell in _this.data.cell){
+      //             if( _this.data.cell[element_cell] == "" && _this.data.cell[element_cell] != 'movil_phone_two' && _this.data.cell[element_cell] != 'phone' ){
+      //                 _this.error_data.cell[element_cell] = true
+      //                 _this.msg_data.cell[element_cell] = 'Campo obligatorio'
+      //             }else{
+      //                 if( !regex.aloneCell( _this.data.cell[element_cell]) && _this.data.cell[element_cell] != 'movil_phone_two' && _this.data.cell[element_cell] != 'phone'  ){
+      //                     _this.error_data.cell[element_cell] = true
+      //                     _this.msg_data.cell[element_cell] = 'Solo 9 digitos'
+      //                 }else{
+      //                     _this.error_data.cell[element_cell] = false
+      //                 }
+      //             }
+      //         }
+      //     }else{
+      //         if( _this.data[element] == "" ){
+      //             _this.error_data[element] = true
+      //             _this.msg_data[element] = 'Campo obligatorio'
+      //         }else {
+      //             if( element == 'name' || element == 'mother_last_name' || element == 'father_last_name' ){
+      //                 if( !regex.aloneLetters( _this.data[element] ) ){
+      //                     _this.error_data[element] = true
+      //                     _this.msg_data[element] = 'Solo letras'
+      //                 }else{
+      //                     _this.error_data[element] = false
+      //                 }
+      //             }else {
+      //                 _this.error_data[element] = false
+      //             }
+      //         }
+      //     }
+      // }
+    },
     modified_data: function modified_data() {
       var _this = this;
 
@@ -3022,6 +3136,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   mounted: function mounted() {
     if (this.data_props) {
+      this.data_props.person.cell = JSON.parse(this.data_props.person.cell);
       this.data = this.data_props.person;
     }
 
@@ -3072,6 +3187,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -3079,11 +3209,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      data: {
+        from: this.authorizedDate(),
+        to: this.authorizedDate()
+      },
       request_debit_card_data: "",
-      request_debit_card_show: false
+      request_debit_card_show: false,
+      table: "",
+      es: language,
+      disabledDates: {
+        from: this.authorizedDate()
+      }
     };
   },
   methods: {
+    searchByDate: function searchByDate() {},
+    authorizedDate: function authorizedDate() {
+      var current = new Date();
+      return current;
+    },
+    close_request_debit_cards: function close_request_debit_cards() {
+      this.request_debit_card_show = false;
+      this.table.ajax.reload();
+    },
     show: function show(table) {
       var _this = this;
 
@@ -3101,9 +3249,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   mounted: function mounted() {
     var _this = this;
 
-    var table;
     $(document).ready(function () {
-      table = $('#table_id').DataTable({
+      _this.table = $('#table_id').DataTable({
         ajax: {
           url: '/account-debit'
         },
@@ -3127,7 +3274,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }, {
           data: null,
           render: function render(data) {
-            if (data.request == 'ver') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-success show\">Mostrar</button>\n                                        </div>\n                                    ";
+            if (data.request == 'Aprobado') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-success show\"><i class=\"far fa-eye\"></i></button>\n                                        </div>\n                                    ";
             return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                        </div>\n                                    ";
           }
         }],
@@ -3160,8 +3307,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }
       });
-      table.on('click', function () {
-        _this.show(table);
+
+      _this.table.on('click', function () {
+        _this.show(_this.table);
       });
     });
   }
@@ -3203,7 +3351,15 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit('close_request_debit_card');
     }
   },
-  mounted: function mounted() {}
+  mounted: function mounted() {
+    var _this = this;
+
+    $('.waiting-result').on('click', function (e) {
+      if (e.target.className == 'waiting-result-container' || e.target.className == 'waiting-result') {
+        _this.close_request_card();
+      }
+    });
+  }
 });
 
 /***/ }),
@@ -3394,32 +3550,32 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {}
+  data: function data() {
+    return {
+      es: language,
+      disabledDates: {
+        from: this.authorizedDate()
+      },
+      data: {
+        date_of_birth: this.authorizedDate()
+      }
+    };
+  },
+  methods: {
+    authorizedDate: function authorizedDate() {
+      var current = new Date();
+      return new Date(current.getFullYear() - 20, current.getMonth(), current.getDay());
+    }
+  },
+  mounted: function mounted() {
+    $(".vdp-datepicker input").css({
+      'border': '1px solid #ced4da',
+      'border-radius': '4px',
+      'color': '#495057',
+      'height': '38px'
+    });
+  }
 });
 
 /***/ }),
@@ -60196,11 +60352,11 @@ var render = function() {
                   placeholder: "Linea de crédito"
                 },
                 model: {
-                  value: _vm.data.degreet_credit,
+                  value: _vm.data.range_degreet_credit,
                   callback: function($$v) {
-                    _vm.$set(_vm.data, "degreet_credit", $$v)
+                    _vm.$set(_vm.data, "range_degreet_credit", $$v)
                   },
-                  expression: "data.degreet_credit"
+                  expression: "data.range_degreet_credit"
                 }
               })
             ],
@@ -60306,6 +60462,10 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("th", [_vm._v("DNI")]),
           _vm._v(" "),
+          _c("th", [_vm._v("CUENTA")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Nro TARJETA")]),
+          _vm._v(" "),
           _c("th", [_vm._v("FECHA")]),
           _vm._v(" "),
           _c("th", [_vm._v("ACCIÓN")])
@@ -60375,8 +60535,37 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "container" },
+    { staticClass: "container", staticStyle: { "margin-top": "2rem" } },
     [
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.is_pop_up,
+              expression: "is_pop_up"
+            }
+          ]
+        },
+        [
+          _c(
+            "button",
+            {
+              staticClass: "btn",
+              class: { close: _vm.is_pop_up },
+              on: {
+                click: function($event) {
+                  return _vm.$emit("close_request_debit_card")
+                }
+              }
+            },
+            [_c("i", { staticClass: "far fa-times-circle" })]
+          )
+        ]
+      ),
+      _vm._v(" "),
       _c("div", { staticClass: "form-group" }, [
         _c("div", { staticClass: "row" }, [
           _c(
@@ -60384,17 +60573,19 @@ var render = function() {
             { staticClass: "col" },
             [
               _c("label", { attrs: { for: "document_type" } }, [
-                _vm._v("Tipo de Documento")
+                _vm._v("Tipo de Documento*")
               ]),
               _vm._v(" "),
               _c("v-select", {
-                staticClass: "bg-white ",
+                staticClass: "bg-white",
+                class: { "error-input": _vm.error_data.document_type },
                 attrs: {
                   disabled: _vm.disabled_input,
                   options: ["dni", "Pasaporte", "Carnet de Extranjeria"],
                   label: "document_type",
                   placeholder: "Tipo de Documento"
                 },
+                on: { click: _vm.validate },
                 model: {
                   value: _vm.data.document_type,
                   callback: function($$v) {
@@ -60402,14 +60593,32 @@ var render = function() {
                   },
                   expression: "data.document_type"
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c("div", [
+                _c(
+                  "label",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.error_data.document_type,
+                        expression: "error_data.document_type"
+                      }
+                    ],
+                    staticClass: "error-msg"
+                  },
+                  [_vm._v(_vm._s(_vm.msg_data.document_type))]
+                )
+              ])
             ],
             1
           ),
           _vm._v(" "),
           _c("div", { staticClass: "col" }, [
             _c("label", { attrs: { for: "dni" } }, [
-              _vm._v("Número de Documento")
+              _vm._v("Número de Documento*")
             ]),
             _vm._v(" "),
             _c("input", {
@@ -60422,6 +60631,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              class: { "error-input": _vm.error_data.document_number },
               attrs: {
                 type: "number",
                 disabled: _vm.disabled_input,
@@ -60430,6 +60640,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.document_number },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60437,7 +60648,25 @@ var render = function() {
                   _vm.$set(_vm.data, "document_number", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _c("div", [
+              _c(
+                "label",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error_data.document_number,
+                      expression: "error_data.document_number"
+                    }
+                  ],
+                  staticClass: "error-msg"
+                },
+                [_vm._v(_vm._s(_vm.msg_data.document_number))]
+              )
+            ])
           ])
         ])
       ]),
@@ -60445,7 +60674,7 @@ var render = function() {
       _c("div", { staticClass: "form-group" }, [
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "name" } }, [_vm._v("Nombre")]),
+            _c("label", { attrs: { for: "name" } }, [_vm._v("Nombre*")]),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -60457,6 +60686,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              class: { "error-input": _vm.error_data.name },
               attrs: {
                 type: "text",
                 disabled: _vm.disabled_input,
@@ -60466,6 +60696,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.name },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60473,12 +60704,30 @@ var render = function() {
                   _vm.$set(_vm.data, "name", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _c("div", [
+              _c(
+                "label",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error_data.name,
+                      expression: "error_data.name"
+                    }
+                  ],
+                  staticClass: "error-msg"
+                },
+                [_vm._v(_vm._s(_vm.msg_data.name))]
+              )
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col" }, [
             _c("label", { attrs: { for: "mother_last_name" } }, [
-              _vm._v("Apellido Paterno")
+              _vm._v("Apellido Paterno*")
             ]),
             _vm._v(" "),
             _c("input", {
@@ -60491,6 +60740,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              class: { "error-input": _vm.error_data.father_last_name },
               attrs: {
                 type: "text",
                 disabled: _vm.disabled_input,
@@ -60500,6 +60750,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.father_last_name },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60507,12 +60758,30 @@ var render = function() {
                   _vm.$set(_vm.data, "father_last_name", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _c("div", [
+              _c(
+                "label",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error_data.father_last_name,
+                      expression: "error_data.father_last_name"
+                    }
+                  ],
+                  staticClass: "error-msg"
+                },
+                [_vm._v(_vm._s(_vm.msg_data.father_last_name))]
+              )
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col" }, [
             _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("Apellido Materno")
+              _vm._v("Apellido Materno*")
             ]),
             _vm._v(" "),
             _c("input", {
@@ -60525,6 +60794,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              class: { "error-input": _vm.error_data.mother_last_name },
               attrs: {
                 type: "text",
                 disabled: _vm.disabled_input,
@@ -60534,6 +60804,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.mother_last_name },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60541,7 +60812,25 @@ var render = function() {
                   _vm.$set(_vm.data, "mother_last_name", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _c("div", [
+              _c(
+                "label",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error_data.mother_last_name,
+                      expression: "error_data.mother_last_name"
+                    }
+                  ],
+                  staticClass: "error-msg"
+                },
+                [_vm._v(_vm._s(_vm.msg_data.mother_last_name))]
+              )
+            ])
           ])
         ])
       ]),
@@ -60550,7 +60839,7 @@ var render = function() {
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col" }, [
             _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Celular")
+              _vm._v("Celular*")
             ]),
             _vm._v(" "),
             _c("input", {
@@ -60563,6 +60852,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              class: { "error-input": _vm.error_data.cell.movil_phone_one },
               attrs: {
                 type: "number",
                 disabled: _vm.disabled_input,
@@ -60572,6 +60862,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.cell.movil_phone_one },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60583,7 +60874,25 @@ var render = function() {
                   )
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _c("div", [
+              _c(
+                "label",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error_data.cell.movil_phone_one,
+                      expression: "error_data.cell.movil_phone_one"
+                    }
+                  ],
+                  staticClass: "error-msg"
+                },
+                [_vm._v(_vm._s(_vm.msg_data.cell.movil_phone_one))]
+              )
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col" }, [
@@ -60610,6 +60919,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.cell.movil_phone_two },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60646,6 +60956,7 @@ var render = function() {
               },
               domProps: { value: _vm.data.cell.phone },
               on: {
+                keyup: _vm.validate,
                 input: function($event) {
                   if ($event.target.composing) {
                     return
@@ -60664,10 +60975,11 @@ var render = function() {
             "div",
             { staticClass: "col" },
             [
-              _c("label", { attrs: { for: "gender" } }, [_vm._v("Género")]),
+              _c("label", { attrs: { for: "gender" } }, [_vm._v("Género*")]),
               _vm._v(" "),
               _c("v-select", {
                 staticClass: "bg-white ",
+                class: { "error-input": _vm.error_data.gender },
                 attrs: {
                   disabled: _vm.disabled_input,
                   options: ["Masculino", "Femenino"],
@@ -60681,7 +60993,25 @@ var render = function() {
                   },
                   expression: "data.gender"
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c("div", [
+                _c(
+                  "label",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.error_data.gender,
+                        expression: "error_data.gender"
+                      }
+                    ],
+                    staticClass: "error-msg"
+                  },
+                  [_vm._v(_vm._s(_vm.msg_data.gender))]
+                )
+              ])
             ],
             1
           )
@@ -60755,16 +61085,81 @@ var render = function() {
     "div",
     { staticClass: "container" },
     [
+      _c("div", { staticClass: "mt-4 mb-4" }, [
+        _c("div", { staticClass: "row bg-01 pt-2 pb-3" }, [
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("label", { attrs: { for: "date_of_birth" } }, [
+                _vm._v(" Desde ")
+              ]),
+              _vm._v(" "),
+              _c("datepicker", {
+                attrs: {
+                  language: _vm.es,
+                  "disabled-dates": _vm.disabledDates,
+                  name: ""
+                },
+                model: {
+                  value: _vm.data.from,
+                  callback: function($$v) {
+                    _vm.$set(_vm.data, "from", $$v)
+                  },
+                  expression: "data.from"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("label", { attrs: { for: "date_of_birth" } }, [
+                _vm._v(" Hasta ")
+              ]),
+              _vm._v(" "),
+              _c("datepicker", {
+                attrs: {
+                  language: _vm.es,
+                  "disabled-dates": _vm.disabledDates,
+                  name: ""
+                },
+                model: {
+                  value: _vm.data.to,
+                  callback: function($$v) {
+                    _vm.$set(_vm.data, "to", $$v)
+                  },
+                  expression: "data.to"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c("div", { staticClass: "mt-4" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  on: { click: _vm.searchByDate }
+                },
+                [_vm._v("BUSCAR")]
+              )
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
       _vm._m(0),
       _vm._v(" "),
       _vm.request_debit_card_show
         ? _c("requestDebitCardPopUp", {
             attrs: { data: _vm.request_debit_card_data },
-            on: {
-              close_request_debit_card: function($event) {
-                _vm.request_debit_card_show = false
-              }
-            }
+            on: { close_request_debit_card: _vm.close_request_debit_cards }
           })
         : _vm._e()
     ],
@@ -60824,7 +61219,7 @@ var render = function() {
     _c("div", { staticClass: "waiting-result-container" }, [
       _c(
         "div",
-        { staticClass: "pop-up" },
+        { staticClass: "pop-up p-4" },
         [
           _c("request-debit-card", {
             attrs: {
@@ -60862,556 +61257,591 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          { staticClass: "col" },
+          [
+            _c("label", { attrs: { for: "document_type" } }, [
+              _vm._v("Tipo de Documento")
+            ]),
+            _vm._v(" "),
+            _c("v-select", {
+              staticClass: "bg-white ",
+              attrs: {
+                options: ["dni", "Pasaporte", "Carnet de Extranjeria"],
+                label: "document_type",
+                placeholder: "Tipo de Documento"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm._m(0)
+      ])
+    ]),
+    _vm._v(" "),
+    _vm._m(1),
+    _vm._v(" "),
+    _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          { staticClass: "col" },
+          [
+            _c("label", { attrs: { for: "date_of_birth" } }, [
+              _vm._v(" Fecha de Nacimiento ")
+            ]),
+            _vm._v(" "),
+            _c("datepicker", {
+              attrs: {
+                language: _vm.es,
+                "disabled-dates": _vm.disabledDates,
+                name: "date_of_birth"
+              },
+              model: {
+                value: _vm.data.date_of_birth,
+                callback: function($$v) {
+                  _vm.$set(_vm.data, "date_of_birth", $$v)
+                },
+                expression: "data.date_of_birth"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "col" },
+          [
+            _c("label", { attrs: { for: "document_type" } }, [
+              _vm._v("Tipo de Documento")
+            ]),
+            _vm._v(" "),
+            _c("v-select", {
+              staticClass: "bg-white ",
+              attrs: {
+                disabled: _vm.update,
+                options: ["Maxculino", "Femenino"],
+                label: "document_type",
+                placeholder: "Tipo de Documento"
+              },
+              model: {
+                value: _vm.data.document_type,
+                callback: function($$v) {
+                  _vm.$set(_vm.data, "document_type", $$v)
+                },
+                expression: "data.document_type"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm._m(2),
+        _vm._v(" "),
+        _vm._m(3)
+      ]),
+      _vm._v(" "),
+      _vm._m(4)
+    ]),
+    _vm._v(" "),
+    _vm._m(5),
+    _vm._v(" "),
+    _vm._m(6),
+    _vm._v(" "),
+    _vm._m(7),
+    _vm._v(" "),
+    _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _vm._m(8),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "col" },
+          [
+            _c("label", { attrs: { for: "movil_phone_one" } }, [
+              _vm._v("Meses")
+            ]),
+            _vm._v(" "),
+            _c("v-select", {
+              staticClass: "bg-white ",
+              attrs: {
+                options: [
+                  "1 mes",
+                  "2 mes",
+                  "3 mes",
+                  "4 mes",
+                  "5 mes",
+                  "6 mes",
+                  "7 mes",
+                  "8 mes",
+                  "9 mes",
+                  "10 mes",
+                  "11 mes",
+                  "12 mes"
+                ],
+                label: "gender",
+                placeholder: "Monto"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm._m(9),
+        _vm._v(" "),
+        _vm._m(10)
+      ])
+    ]),
+    _vm._v(" "),
+    _vm._m(11),
+    _vm._v(" "),
+    _vm._m(12)
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "tipoDoc" } }, [
-              _vm._v("Tipo de Documento")
-            ]),
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "dni" } }, [_vm._v("Dni")]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: { type: "text", name: "dni", placeholder: "Dni" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "name" } }, [_vm._v("Nombre")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "name",
+              id: "name",
+              placeholder: "Nombre"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "mother_last_name" } }, [
+            _vm._v("Apellido Materno")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "mother_last_name",
+              id: "mother_last_name",
+              placeholder: "Apellido Paterno"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "father_last_name" } }, [
+            _vm._v("Apellido Paterno")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "father_last_name",
+              id: "father_last_name",
+              placeholder: "Apellido Materno"
+            }
+          })
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "father_last_name" } }, [
+        _vm._v("País de Nacimiento")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "text",
+          name: "father_last_name",
+          id: "father_last_name",
+          placeholder: "Apellido Materno"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "father_last_name" } }, [
+        _vm._v("País de Nacionalidad")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "text",
+          name: "father_last_name",
+          id: "father_last_name",
+          placeholder: "Apellido Materno"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col" }, [
+        _c("label", { attrs: { for: "father_last_name" } }, [
+          _vm._v("Estado Civil")
+        ]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "form-control",
+          attrs: {
+            type: "text",
+            name: "father_last_name",
+            id: "father_last_name",
+            placeholder: "Apellido Materno"
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col" }, [
+        _c("label", { attrs: { for: "father_last_name" } }, [
+          _vm._v("Grado de Máximo de Estudios")
+        ]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "form-control",
+          attrs: {
+            type: "text",
+            name: "father_last_name",
+            id: "father_last_name",
+            placeholder: "Apellido Materno"
+          }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [
+            _vm._v("Celular")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Celular"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_two" } }, [
+            _vm._v("Celular 2")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_two",
+              id: "movil_phone_two",
+              placeholder: "celular(opcional)"
+            }
+          })
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [_vm._v("Email")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Celular"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_two" } }, [
+            _vm._v("Telefono")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_two",
+              id: "movil_phone_two",
+              placeholder: "celular(opcional)"
+            }
+          })
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [_vm._v("Mz")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Celular"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [_vm._v("Calle")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Celular"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [_vm._v("Jirón")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Celular"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "district" } }, [_vm._v("Distrito")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "district",
+              id: "district",
+              placeholder: "Distrito"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "departament" } }, [
+            _vm._v("Departamento")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "departament",
+              id: "departament",
+              placeholder: "Departemento"
+            }
+          })
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "occupation" } }, [_vm._v("Ocupación")]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "occupation",
+              id: "occupation",
+              placeholder: "Ocupación"
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("label", { attrs: { for: "movil_phone_one" } }, [
+            _vm._v("Salario Promedio (Mensual)")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "movil_phone_one",
+              id: "movil_phone_one",
+              placeholder: "Salario Promedio"
+            }
+          })
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "occupation" } }, [
+        _vm._v("Monto de prestamo")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: { type: "text", name: "monto", placeholder: "Monto de prestamo" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "movil_phone_one" } }, [
+        _vm._v("Monto Mensual")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "text",
+          name: "montomensual",
+          placeholder: "Monto mensual"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("label", { attrs: { for: "movil_phone_one" } }, [
+        _vm._v("Total a pagar")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control btn-info",
+        attrs: { type: "text", name: "total", placeholder: "Total a pagar" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("div", { staticClass: "form-check" }, [
+            _c("input", {
+              staticClass: "form-check-input",
+              attrs: { type: "checkbox", id: "gridCheck" }
+            }),
             _vm._v(" "),
             _c(
-              "select",
-              {
-                staticClass: "form-control",
-                attrs: { name: "tipoDoc", id: "tipoDoc" }
-              },
-              [
-                _c("option", { attrs: { value: "dni", selected: "" } }, [
-                  _vm._v("DNI")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "pasaporte" } }, [
-                  _vm._v("Pasaporte")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "carnet" } }, [
-                  _vm._v("Carnet de Extranjeria")
-                ])
-              ]
+              "label",
+              { staticClass: "form-check-label", attrs: { for: "gridCheck" } },
+              [_vm._v("\n                        Si\n                    ")]
             )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "dni" } }, [_vm._v("Dni")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: { type: "text", name: "dni", placeholder: "Documento" }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "name" } }, [_vm._v("Nombre")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "name",
-                id: "name",
-                placeholder: "Nombre"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "mother_last_name" } }, [
-              _vm._v("Apellido Materno")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "mother_last_name",
-                id: "mother_last_name",
-                placeholder: "Apellido Paterno"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("Apellido Paterno")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "father_last_name",
-                id: "father_last_name",
-                placeholder: "Apellido Materno"
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("span", [_vm._v(" Fecha de Nacimiento ")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    name: "name",
-                    id: "name",
-                    placeholder: "Nombre"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    name: "name",
-                    id: "name",
-                    placeholder: "Nombre"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    name: "name",
-                    id: "name",
-                    placeholder: "Nombre"
-                  }
-                })
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "mother_last_name" } }, [
-              _vm._v("Género")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "mother_last_name",
-                id: "mother_last_name",
-                placeholder: "Apellido Paterno"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("País de Nacimiento")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "father_last_name",
-                id: "father_last_name",
-                placeholder: "Apellido Materno"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("País de Nacionalidad")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "father_last_name",
-                id: "father_last_name",
-                placeholder: "Apellido Materno"
-              }
-            })
           ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("Estado Civil")
-            ]),
-            _vm._v(" "),
+        _c("div", { staticClass: "col" }, [
+          _c("div", { staticClass: "form-check" }, [
             _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "father_last_name",
-                id: "father_last_name",
-                placeholder: "Apellido Materno"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "father_last_name" } }, [
-              _vm._v("Grado de Máximo de Estudios")
-            ]),
+              staticClass: "form-check-input",
+              attrs: { type: "checkbox", id: "gridCheck" }
+            }),
             _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "father_last_name",
-                id: "father_last_name",
-                placeholder: "Apellido Materno"
-              }
-            })
+            _c(
+              "label",
+              { staticClass: "form-check-label", attrs: { for: "gridCheck" } },
+              [_vm._v("\n                        No\n                    ")]
+            )
           ])
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Celular")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Celular"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_two" } }, [
-              _vm._v("Celular 2")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_two",
-                id: "movil_phone_two",
-                placeholder: "celular(opcional)"
-              }
-            })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-10" }),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-1" }, [
+          _c("button", { staticClass: "btn btn-primary" }, [
+            _vm._v("Registrar")
           ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Email")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Celular"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_two" } }, [
-              _vm._v("Telefono")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_two",
-                id: "movil_phone_two",
-                placeholder: "celular(opcional)"
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [_vm._v("Mz")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Celular"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Calle")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Celular"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Jirón")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Celular"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "district" } }, [_vm._v("Distrito")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "district",
-                id: "district",
-                placeholder: "Distrito"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "departament" } }, [
-              _vm._v("Departamento")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "departament",
-                id: "departament",
-                placeholder: "Departemento"
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "occupation" } }, [
-              _vm._v("Ocupación")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "occupation",
-                id: "occupation",
-                placeholder: "Ocupación"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Salario Promedio (Mensual)")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "movil_phone_one",
-                id: "movil_phone_one",
-                placeholder: "Salario Promedio"
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "occupation" } }, [
-              _vm._v("Monto de prestamo")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "monto",
-                placeholder: "Monto de prestamo"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Meses")
-            ]),
-            _vm._v(" "),
-            _c(
-              "select",
-              {
-                staticClass: "form-control",
-                attrs: { name: "tipoDoc", id: "meses" }
-              },
-              [
-                _c("option", { attrs: { value: "0", selected: "" } }, [
-                  _vm._v("2 meses")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "1" } }, [_vm._v("3 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "2" } }, [_vm._v("4 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "3" } }, [_vm._v("6 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "4" } }, [_vm._v("12 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "5" } }, [_vm._v("18 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "6" } }, [_vm._v("24 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "7" } }, [_vm._v("36 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "8" } }, [_vm._v("48 meses")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "9" } }, [_vm._v("60 meses")])
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Monto Mensual")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "montomensual",
-                placeholder: "Monto mensual"
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("label", { attrs: { for: "movil_phone_one" } }, [
-              _vm._v("Total a pagar")
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control btn-info",
-              attrs: {
-                type: "text",
-                name: "total",
-                placeholder: "Total a pagar"
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("div", { staticClass: "form-check" }, [
-              _c("input", {
-                staticClass: "form-check-input",
-                attrs: { type: "checkbox", id: "gridCheck" }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "form-check-label",
-                  attrs: { for: "gridCheck" }
-                },
-                [_vm._v("\n                        Si\n                    ")]
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
-            _c("div", { staticClass: "form-check" }, [
-              _c("input", {
-                staticClass: "form-check-input",
-                attrs: { type: "checkbox", id: "gridCheck" }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "form-check-label",
-                  attrs: { for: "gridCheck" }
-                },
-                [_vm._v("\n                        No\n                    ")]
-              )
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-10" }),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-1" }, [
-            _c("button", { staticClass: "btn btn-primary" }, [
-              _vm._v("Registrar")
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-1" })
-        ])
+        _c("div", { staticClass: "col-1" })
       ])
     ])
   }
@@ -79541,20 +79971,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_select__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(vue_select__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _node_modules_vuejs_datepicker_dist_locale_translations_es__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../node_modules/vuejs-datepicker/dist/locale/translations/es */ "./node_modules/vuejs-datepicker/dist/locale/translations/es.js");
 /* harmony import */ var _node_modules_vuejs_datepicker_dist_locale_translations_es__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vuejs_datepicker_dist_locale_translations_es__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _components_RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/RequestDebitCard.vue */ "./resources/js/components/RequestDebitCard.vue");
-/* harmony import */ var _components_RequestDebitCardShow_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/RequestDebitCardShow.vue */ "./resources/js/components/RequestDebitCardShow.vue");
-/* harmony import */ var _components_RequestCreditCard_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/RequestCreditCard.vue */ "./resources/js/components/RequestCreditCard.vue");
-/* harmony import */ var _components_RequestCreditCardShow_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/RequestCreditCardShow.vue */ "./resources/js/components/RequestCreditCardShow.vue");
-/* harmony import */ var _components_RequestLoan_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/RequestLoan.vue */ "./resources/js/components/RequestLoan.vue");
-/* harmony import */ var _components_EvalutionCreditCard_vue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/EvalutionCreditCard.vue */ "./resources/js/components/EvalutionCreditCard.vue");
-/* harmony import */ var _components_EvalutionRequestLoan_vue__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/EvalutionRequestLoan.vue */ "./resources/js/components/EvalutionRequestLoan.vue");
-/* harmony import */ var _components_RegisterPerson_vue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/RegisterPerson.vue */ "./resources/js/components/RegisterPerson.vue");
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
-/* harmony import */ var _components_Users_Users_vue__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./components/Users/Users.vue */ "./resources/js/components/Users/Users.vue");
-/* harmony import */ var _components_Users_Register_vue__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./components/Users/Register.vue */ "./resources/js/components/Users/Register.vue");
-/* harmony import */ var _components_RegisterWeb_vue__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/RegisterWeb.vue */ "./resources/js/components/RegisterWeb.vue");
-/* harmony import */ var _components_RegisterBorrow_vue__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./components/RegisterBorrow.vue */ "./resources/js/components/RegisterBorrow.vue");
-/* harmony import */ var _components_RegisterDataBorrow_vue__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./components/RegisterDataBorrow.vue */ "./resources/js/components/RegisterDataBorrow.vue");
+/* harmony import */ var _utils_regex_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/regex.js */ "./resources/js/utils/regex.js");
+/* harmony import */ var _components_RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/RequestDebitCard.vue */ "./resources/js/components/RequestDebitCard.vue");
+/* harmony import */ var _components_RequestDebitCardShow_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/RequestDebitCardShow.vue */ "./resources/js/components/RequestDebitCardShow.vue");
+/* harmony import */ var _components_RequestCreditCard_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/RequestCreditCard.vue */ "./resources/js/components/RequestCreditCard.vue");
+/* harmony import */ var _components_RequestCreditCardShow_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/RequestCreditCardShow.vue */ "./resources/js/components/RequestCreditCardShow.vue");
+/* harmony import */ var _components_RequestLoan_vue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/RequestLoan.vue */ "./resources/js/components/RequestLoan.vue");
+/* harmony import */ var _components_EvalutionCreditCard_vue__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/EvalutionCreditCard.vue */ "./resources/js/components/EvalutionCreditCard.vue");
+/* harmony import */ var _components_EvalutionRequestLoan_vue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/EvalutionRequestLoan.vue */ "./resources/js/components/EvalutionRequestLoan.vue");
+/* harmony import */ var _components_RegisterPerson_vue__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/RegisterPerson.vue */ "./resources/js/components/RegisterPerson.vue");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
+/* harmony import */ var _components_Users_Users_vue__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./components/Users/Users.vue */ "./resources/js/components/Users/Users.vue");
+/* harmony import */ var _components_Users_Register_vue__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/Users/Register.vue */ "./resources/js/components/Users/Register.vue");
+/* harmony import */ var _components_RegisterWeb_vue__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./components/RegisterWeb.vue */ "./resources/js/components/RegisterWeb.vue");
+/* harmony import */ var _components_RegisterBorrow_vue__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./components/RegisterBorrow.vue */ "./resources/js/components/RegisterBorrow.vue");
+/* harmony import */ var _components_RegisterDataBorrow_vue__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./components/RegisterDataBorrow.vue */ "./resources/js/components/RegisterDataBorrow.vue");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -79586,12 +80017,14 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('app-menu', __webpack_requi
 
 
 
+
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('datepicker', vuejs_datepicker__WEBPACK_IMPORTED_MODULE_5__["default"]);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEBPACK_IMPORTED_MODULE_6___default.a);
 window.Swal = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a;
 window.waitingDialog = bootstrap_waitingfor__WEBPACK_IMPORTED_MODULE_3___default.a;
 window.datepicker = js_datepicker__WEBPACK_IMPORTED_MODULE_4___default.a;
 window.language = _node_modules_vuejs_datepicker_dist_locale_translations_es__WEBPACK_IMPORTED_MODULE_7___default.a;
+window.regex = new _utils_regex_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
 /*
     start
 */
@@ -79614,47 +80047,47 @@ end
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_16__["default"]);
-var router = new vue_router__WEBPACK_IMPORTED_MODULE_16__["default"]({
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_17__["default"]);
+var router = new vue_router__WEBPACK_IMPORTED_MODULE_17__["default"]({
   routes: [{
     path: '/request-debit-card',
-    component: _components_RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
+    component: _components_RequestDebitCard_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
   }, {
     path: '/request-debit-card-show',
-    component: _components_RequestDebitCardShow_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
+    component: _components_RequestDebitCardShow_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
   }, {
     path: '/request-credit-card',
-    component: _components_RequestCreditCard_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
+    component: _components_RequestCreditCard_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
   }, {
     path: '/request-credit-card-show',
-    component: _components_RequestCreditCardShow_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
+    component: _components_RequestCreditCardShow_vue__WEBPACK_IMPORTED_MODULE_12__["default"]
   }, {
     path: '/request-loan',
-    component: _components_RequestLoan_vue__WEBPACK_IMPORTED_MODULE_12__["default"]
+    component: _components_RequestLoan_vue__WEBPACK_IMPORTED_MODULE_13__["default"]
   }, {
     path: '/evalution-credit-card',
-    component: _components_EvalutionCreditCard_vue__WEBPACK_IMPORTED_MODULE_13__["default"]
+    component: _components_EvalutionCreditCard_vue__WEBPACK_IMPORTED_MODULE_14__["default"]
   }, {
     path: '/evalution-request-loan',
-    component: _components_EvalutionRequestLoan_vue__WEBPACK_IMPORTED_MODULE_14__["default"]
+    component: _components_EvalutionRequestLoan_vue__WEBPACK_IMPORTED_MODULE_15__["default"]
   }, {
     path: '/registerPerson',
-    component: _components_RegisterPerson_vue__WEBPACK_IMPORTED_MODULE_15__["default"]
+    component: _components_RegisterPerson_vue__WEBPACK_IMPORTED_MODULE_16__["default"]
   }, {
     path: '/showUsers',
-    component: _components_Users_Users_vue__WEBPACK_IMPORTED_MODULE_17__["default"]
+    component: _components_Users_Users_vue__WEBPACK_IMPORTED_MODULE_18__["default"]
   }, {
     path: '/registerUsers',
-    component: _components_Users_Register_vue__WEBPACK_IMPORTED_MODULE_18__["default"]
+    component: _components_Users_Register_vue__WEBPACK_IMPORTED_MODULE_19__["default"]
   }, {
     path: '/registerWeb',
-    component: _components_RegisterWeb_vue__WEBPACK_IMPORTED_MODULE_19__["default"]
+    component: _components_RegisterWeb_vue__WEBPACK_IMPORTED_MODULE_20__["default"]
   }, {
     path: '/registerBorrow',
-    component: _components_RegisterBorrow_vue__WEBPACK_IMPORTED_MODULE_20__["default"]
+    component: _components_RegisterBorrow_vue__WEBPACK_IMPORTED_MODULE_21__["default"]
   }, {
     path: '/registerDataBorrow',
-    component: _components_RegisterDataBorrow_vue__WEBPACK_IMPORTED_MODULE_21__["default"]
+    component: _components_RegisterDataBorrow_vue__WEBPACK_IMPORTED_MODULE_22__["default"]
   }]
 });
 /**
@@ -81108,6 +81541,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_waiting_vue_vue_type_template_id_2e452198___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_waiting_vue_vue_type_template_id_2e452198___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/utils/regex.js":
+/*!*************************************!*\
+  !*** ./resources/js/utils/regex.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Regex; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Regex = /*#__PURE__*/function () {
+  function Regex() {
+    _classCallCheck(this, Regex);
+  }
+
+  _createClass(Regex, [{
+    key: "aloneLetters",
+    value: function aloneLetters(str) {
+      var regex = new RegExp('^[A-z]+$');
+      return regex.test(str);
+    }
+  }, {
+    key: "aloneCell",
+    value: function aloneCell(number) {
+      var regex = /^[1-9][0-9]{0,8}$/;
+      return regex.test(number);
+    }
+  }]);
+
+  return Regex;
+}();
 
 
 
