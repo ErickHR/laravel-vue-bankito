@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Person;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PersonController extends Controller
 {
@@ -49,6 +51,8 @@ class PersonController extends Controller
             $person = Person::create( $request->all() );
             $account = $person->account()->create( $request->all() );
             if( $request->type == "debit" ){
+                $this->createPersonRole( $person, $request->id_role );
+                $this->createUser($request, $request["document_number"]);
                 $request['expired_date'] = Carbon::now()->addYears(4)->format('Y-m-d');
                 $request["card_number"] = '1080'.$request->document_number.'1793';
                 $request["CVC"] = '1111';
@@ -109,4 +113,67 @@ class PersonController extends Controller
     {
         //
     }
+    
+    public function createUser( Request $request, $password ){
+
+        $request['password'] = bcrypt( $password );
+
+        $user = User::create($request->all());
+
+        return $user;
+
+    }
+
+    public static function getPersonUser(  ){
+
+        $person = Person::with('role')->where( 'email', Auth::user()->email )->get();
+        
+        if ( count($person) == 0 ){
+            return "administrador";
+        }
+        
+        return $person[0]->role[0]->name;
+        
+    }
+
+    public function createPersonRole( $person , $id_role ){
+        
+        return $person->role()->attach( $id_role );
+
+    }
+
+    public function getWorker(  ){
+
+        $worker = Person::with(['role' => function($query){
+            $query->where('name', 'trabajador');
+        }])->whereHas( 'role', function( $query ){
+            $query->where('name', '=', 'trabajador');
+        } )->get();
+
+        
+        return response( [ "data" => $worker ] );
+        
+    }
+    public function createWorker(Request $request ){
+        $person = Person::create( $request->all() );
+        $this->createPersonRole( $person, $request->id_role );
+        $this->createUser($request, $request["document_number"]);
+        return response( [ "response" => true ] );
+    }
+
+    public function perfil(  ){
+
+        $person = Person::where( 'email', Auth::user()->email )->first();
+        
+        return $person;
+        
+    }
+    public function changePassword( Request $request ){
+        $request['password'] = bcrypt( $request['password'] );
+        $user = User::where( 'email', $request['email'] )->first();
+        $user->update( $request->all() );
+        return $user;
+
+    }
+
 }

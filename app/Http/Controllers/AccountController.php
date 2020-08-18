@@ -95,7 +95,8 @@ class AccountController extends Controller
         //
     }
 
-    public function request_debit(){
+    public function request_debit( Request $request ){
+
         $request_debit = Account::with( ['person', 'card'] )->where( 'type', 'debit' )->get();
         return response( [ "data" => $request_debit ] );
     }

@@ -29,4 +29,11 @@ Route::get('account-debit', 'AccountController@request_debit');
 Route::get('account-credit', 'AccountController@request_credit');
 Route::get('request-debit-cards-show', 'RequestCardController@request_debit_card_show');
 Route::get('request-credit-cards-show', 'RequestCardController@request_credit_card_show');
+Route::post('create-user', 'PersonController@createUser');
+Route::resource('role', 'RoleController');
+Route::get('get-user', 'PersonController@getPersonUser');
+Route::get('worker', 'PersonController@getWorker');
+Route::post('register-worker', 'PersonController@createWorker');
+Route::get('perfil', 'PersonController@perfil');
+Route::post('change-password', 'PersonController@changePassword');
 

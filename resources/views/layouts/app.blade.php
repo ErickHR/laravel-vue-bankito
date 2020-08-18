@@ -33,73 +33,78 @@
 </head>
 <body>
     <?php
+        $items = [];
+    if( isset($rol) ){
+if( $rol == "administrador" ){
         $items = [
             [ 
-                "icon"=>"fas fa-edit", 
+                "icon"=>"fas fa-money-check", 
                 "route"=>"request-debit-card", 
                 "tittle"=>"Solicitar tarjeta de débito"
             ],
             [ 
-                "icon"=>"fas fa-edit", 
+                "icon"=>"fas fa-users", 
                 "route"=>"request-debit-card-show", 
                 "tittle"=>"Mostrar solicitudes de tarjeta de débito"
             ],
             [ 
-                "icon"=>"fas fa-edit", 
+                "icon"=>"fas fa-money-check-alt", 
                 "route"=>"request-credit-card", 
                 "tittle"=>"Solicitar tarjeta de crédito"
             ],
             [ 
-                "icon"=>"fas fa-edit", 
+                "icon"=>"fas fa-users", 
                 "route"=>"request-credit-card-show", 
                 "tittle"=>"Mostrar solicitudes de tarjeta de crédito"
             ],
             [ 
-                "icon"=>"fas fa-edit", 
-                "route"=>"request-loan", 
-                "tittle"=>"Solicitar prestamo"
-            ],
+                "icon"=>"fas fa-users", 
+                "route"=>"list-worker", 
+                "tittle"=>"Empleados"
+            ]
+        ];
+    } else if( $rol == "trabajador" ){
+        $items = [
             [ 
-                "icon"=>"fas fa-edit", 
-                "route"=>"evalution-credit-card", 
-                "tittle"=>"Evaluación de tarjeta de crédito"
-            ],
-            [ 
-                "icon"=>"fas fa-edit", 
-                "route"=>"evalution-request-loan", 
-                "tittle"=>"Evaluación de solicitud de préstamo"
+                "icon"=>"fas fa-money-check", 
+                "route"=>"request-debit-card", 
+                "tittle"=>"Solicitar tarjeta de débito"
             ],
             [ 
                 "icon"=>"fas fa-users", 
-                "route"=>"showUsers", 
-                "tittle"=>""
-            ],
-            [ 
-                "icon"=>"fas fa-users", 
-                "route"=>"showUsers", 
-                "tittle"=>"Usuarios"
-            ],
-            [ 
-                "icon"=>"fas fa-users", 
-                "route"=>"registerUsers", 
-                "tittle"=>"Registrar Usuarios"
-            ],
-            [ 
-                "icon"=>"fas fa-wifi", 
-                "route"=>"registerWeb", 
-                "tittle"=>"Registrar Web"
+                "route"=>"request-debit-card-show", 
+                "tittle"=>"Mostrar solicitudes de tarjeta de débito"
             ],
             [ 
                 "icon"=>"fas fa-money-check-alt", 
-                "route"=>"registerBorrow", 
-                "tittle"=>"Registrar Prestamo"
+                "route"=>"request-credit-card", 
+                "tittle"=>"Solicitar tarjeta de crédito"
+            ]
+        ];
+    }  else if( $rol == "cliente" ){
+        $items = [
+            [ 
+                "icon"=>"fas fa-users", 
+                "route"=>"registerUsers", 
+                "tittle"=>"Registrar Usuario"
             ],
             [ 
-                "icon"=>"fas fa-money-check", 
-                "route"=>"registerDataBorrow", 
-                "tittle"=>"Registrar Datos Prestamo"
+                "icon"=>"fas fa-money-check-alt", 
+                "route"=>"transfer-credit", 
+                "tittle"=>"Transferencia Credito"
             ]
-        ]
+        ];
+    }
+     $items[] = [
+         "icon"=>"fas fa-user-edit", 
+        "route"=>"personal-data", 
+        "tittle"=>"Datos Personales"
+     ]; 
+    }
+    
+
+        
+            
     ?>
     <div id="app">
         @guest

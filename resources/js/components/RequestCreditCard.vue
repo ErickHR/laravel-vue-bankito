@@ -125,7 +125,7 @@
             <div class="row">
                 <div class="col">
                     <label for="degree_credit">Grado de línea de crédito</label>
-                    <v-select class="bg-white color-inpu" v-model="data.range_degreet_credit" :disabled="update" :options="[ '1 ( 0 - 1500 )', '2 ( 1500 - 5000 )', '3 ( 5000 - 15000 )', '4 ( 15000 - 45000 )' ]" label='degree_credit' placeholder="Linea de crédito" ></v-select>
+                    <v-select class="bg-white color-inpu" v-model="data.degreet_credit" :disabled="update" :options="[ '1 ( 0 - 1500 )', '2 ( 1500 - 5000 )', '3 ( 5000 - 15000 )', '4 ( 15000 - 45000 )' ]" label='degree_credit' placeholder="Linea de crédito" ></v-select>
                 </div>
             </div>
         </div>
@@ -191,7 +191,7 @@
                     },
                     employment          : "",
                     salary              : "",
-                    range_degreet_credit: "",
+                    degreet_credit      : "",
                     type                : "credit"
                 },
                 disabledDates:{
@@ -240,6 +240,7 @@
                     this.update = false
                     this.tittle_btn = "Guardar"
                 } else {
+                    
                     body.address = JSON.stringify( this.data.address )
                     body.cell = JSON.stringify( this.data.cell )
                     this.show_waiting = true

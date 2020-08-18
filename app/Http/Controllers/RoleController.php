@@ -14,7 +14,12 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+
+        Role::create( ["name" => "admin"]);
+        Role::create( ["name" => "trabajador"]);
+        Role::create( ["name"=>"cliente"]);
+        return "creado";
+
     }
 
     /**
@@ -33,9 +38,9 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store( Request $request )
     {
-        //
+        
     }
 
     /**

@@ -59,6 +59,9 @@ import requestCreditCardShow from './components/RequestCreditCardShow.vue'
 import requestLoan from './components/RequestLoan.vue'
 import evalutionCreditCard from './components/EvalutionCreditCard.vue'
 import evalutionRequestLoan from './components/EvalutionRequestLoan.vue'
+import listWorker from './components/Users/worker.vue'
+import personalData from './components/Users/PersonalData.vue'
+import transferCredit from './components/Users/TransferCredit.vue'
 
 /*
 end 
@@ -93,8 +96,20 @@ const router = new VueRouter({
             component: requestCreditCardShow
         },
         {
+            path: '/list-worker',
+            component: listWorker
+        },
+        {
+            path: '/personal-data',
+            component: personalData
+        },
+        {
             path: '/request-loan',
             component: requestLoan
+        },
+        {
+            path: '/transfer-credit',
+            component: transferCredit
         },
         {
             path:'/evalution-credit-card',

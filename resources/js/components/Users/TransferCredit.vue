@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import requestDebitCardPopUp from './RequestDebitCardShow_Pop_Up.vue'
+import requestDebitCardPopUp from './../RequestDebitCardShow_Pop_Up.vue'
 export default {
     components:{
         requestDebitCardPopUp

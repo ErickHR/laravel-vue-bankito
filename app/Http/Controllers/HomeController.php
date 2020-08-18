@@ -23,6 +23,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        
+        $rol = PersonController::getPersonUser();
+        return view('home', compact('rol'));
     }
 }

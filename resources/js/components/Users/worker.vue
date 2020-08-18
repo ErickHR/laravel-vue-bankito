@@ -1,21 +1,7 @@
 <template>
     
     <div class="container">
-        <div class="mt-4 mb-4">
-            <div class="row bg-01 pt-2 pb-3">
-                <div class="col">
-                    <label for="date_of_birth"> Desde </label>
-                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.from"></datepicker>
-                </div>
-                <div class="col">
-                    <label for="date_of_birth"> Hasta </label>
-                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.to"></datepicker>
-                </div>
-                <div class="col">
-                    <div class="mt-4"><button class="btn btn-success" @click="searchByDate">BUSCAR</button></div>
-                </div>
-            </div>
-        </div>
+        <button class="btn btn-primary" @click="addWorker">AGREGAR</button>
         <table id="table_id" class="tableBP">
             <thead>
                 <tr>
@@ -23,26 +9,27 @@
                     <th>NOMBRE</th>
                     <th>APELLIDOS</th>
                     <th>DNI</th>
-                    <th>CUENTA</th>
-                    <th>Nro TARJETA</th>
+                    <th>EMAIL</th>
                     <th>FECHA</th>
                     <th>ACCIÓN</th>
                 </tr>
             </thead>
         </table>
-        <requestDebitCardPopUp v-if="request_debit_card_show" :data="request_debit_card_data" @close_request_debit_card="close_request_debit_cards"></requestDebitCardPopUp>
+        <worker v-if="addWorkers" :data="{}" :is_pop_up="false"  @closeWorker="closeRegisterWorker"></worker>
+        
     </div>
 
 </template>
 
 <script>
-import requestDebitCardPopUp from './RequestDebitCardShow_Pop_Up.vue'
+import worker from './workerRegister.vue'
 export default {
     components:{
-        requestDebitCardPopUp
+        worker
     },
     data: function(){
         return {
+            addWorkers : false,
             data:{
                 from : this.authorizedDate(),
                 to   : this.authorizedDate(),
@@ -58,7 +45,13 @@ export default {
         }
     },
     methods:{
-        
+        closeRegisterWorker(){
+            this.addWorkers=false
+            this.table.ajax.reload()
+        },
+        addWorker(){
+            this.addWorkers = true
+        },
         searchByDate(){
             this.table.ajax().reload()
         },
@@ -91,20 +84,19 @@ export default {
              
             _this.table = $('#table_id').DataTable( {
                 ajax:{
-                    url:'/account-debit',
+                    url:'/worker',
                 },
                 columns:[
                     { data : 'id' },
-                    { data:"person.name" },
+                    { data:"name" },
                     {
                         data : null,
                         render : function ( data, type, full, meta ){
-                            return data.person.father_last_name + " " + data.person.mother_last_name
+                            return data.father_last_name + " " + data.mother_last_name
                         }
                     },
-                    { data:"person.document_number" },
-                    { data:"account_number" },
-                    { data:"card.card_number" },
+                    { data:"document_number" },
+                    { data:"email" },
                     { data:"created_at" },
                     {
                         data:null,

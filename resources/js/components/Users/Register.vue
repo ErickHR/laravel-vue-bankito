@@ -79,6 +79,20 @@
 
         mounted() {
             console.log('Component mounted.')
+            axios.get('get-user')
+                .then( res => {
+                    console.log(res.data)
+                } )
+                .catch( e => {
+                    console.log(e)
+                } )
+                // axios.post('role', {name:"erick"})
+                // .then( res => {
+                //     console.log(res.data)
+                // } )
+                // .catch( e => {
+                //     console.log(e)
+                // } )
         }
     }
 </script>
