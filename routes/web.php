@@ -36,4 +36,6 @@ Route::get('worker', 'PersonController@getWorker');
 Route::post('register-worker', 'PersonController@createWorker');
 Route::get('perfil', 'PersonController@perfil');
 Route::post('change-password', 'PersonController@changePassword');
+Route::resource('operation', 'OperationController');
+Route::get('operation-show', 'OperationController@showOperation');
 

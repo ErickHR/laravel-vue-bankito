@@ -4,15 +4,19 @@
         <div class="mt-4 mb-4">
             <div class="row bg-01 pt-2 pb-3">
                 <div class="col">
-                    <label for="date_of_birth"> Desde </label>
-                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.from"></datepicker>
+                    <label for="date_of_birth"> Cantidad </label>
+                    <input class="form-control" v-model="data.amountAccount" type="number">
                 </div>
                 <div class="col">
-                    <label for="date_of_birth"> Hasta </label>
-                    <datepicker :language="es" :disabled-dates="disabledDates" name="" v-model="data.to"></datepicker>
+                    <label for="date_of_birth"> Transferencia </label>
+                    <input class="form-control" v-model="data.amount" type="number">
                 </div>
                 <div class="col">
-                    <div class="mt-4"><button class="btn btn-success" @click="searchByDate">BUSCAR</button></div>
+                    <label for="date_of_birth"> Cuenta </label>
+                    <input class="form-control" v-model="data.account_id" type="text">
+                </div>
+                <div class="col">
+                    <div class="mt-4"><button class="btn btn-success" @click="sentAmount">Enviar</button></div>
                 </div>
             </div>
         </div>
@@ -20,13 +24,10 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>NOMBRE</th>
-                    <th>APELLIDOS</th>
-                    <th>DNI</th>
                     <th>CUENTA</th>
-                    <th>Nro TARJETA</th>
+                    <th>MONTO</th>
+                    <th>TIPO</th>
                     <th>FECHA</th>
-                    <th>ACCIÓN</th>
                 </tr>
             </thead>
         </table>
@@ -44,8 +45,10 @@ export default {
     data: function(){
         return {
             data:{
-                from : this.authorizedDate(),
-                to   : this.authorizedDate(),
+                amount : 0,
+                account_id : 0,
+                amountAccount: 0,
+                type:'Envio'
 
             },
             request_debit_card_data : "",
@@ -58,7 +61,28 @@ export default {
         }
     },
     methods:{
-        
+        showOperation(){
+            axios.get('operation-show')
+            .then( res => {
+                console.log(res.data)
+            } )
+        },
+        amountMine(){
+            let _this = this
+            axios.get('operation')
+            .then( res => {
+                _this.data.amountAccount = res.data.amount
+            } )
+        },
+        sentAmount(){
+            let _this = this
+            let body = {..._this.data}
+            axios.post('operation', body).
+                then(res => {
+                    _this.amountMine()
+                     _this.table.ajax.reload();
+                })
+        },
         searchByDate(){
             this.table.ajax().reload()
         },
@@ -86,44 +110,22 @@ export default {
         }
     },
     mounted(){
+        
         let _this = this
+        _this.showOperation()
+        _this.amountMine()
          $(document).ready( function () {
              
             _this.table = $('#table_id').DataTable( {
                 ajax:{
-                    url:'/account-debit',
+                    url:'/operation-show',
                 },
                 columns:[
                     { data : 'id' },
-                    { data:"person.name" },
-                    {
-                        data : null,
-                        render : function ( data, type, full, meta ){
-                            return data.person.father_last_name + " " + data.person.mother_last_name
-                        }
-                    },
-                    { data:"person.document_number" },
-                    { data:"account_number" },
-                    { data:"card.card_number" },
+                    { data:"account_id" },
+                    { data:"amount" },
+                    { data:"type" },
                     { data:"created_at" },
-                    {
-                        data:null,
-                        render : function ( data ) {
-                            if ( data.request == 'Aprobado' )
-                                return `
-                                        <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-success show"><i class="far fa-eye"></i></button>
-                                        </div>
-                                    `
-                             
-                             return `
-                                        <div style = " width : fit-content; margin : 0 auto ">
-                                            <button class="btn btn-link red">Vacío</button>
-                                        </div>
-                                    `
-                                
-                        }
-                    }
                 ],
                 language: {
                     "sProcessing":     "Procesando...",

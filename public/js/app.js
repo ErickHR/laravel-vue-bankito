@@ -3993,6 +3993,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -4001,8 +4002,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       data: {
-        from: this.authorizedDate(),
-        to: this.authorizedDate()
+        amount: 0,
+        account_id: 0,
+        amountAccount: 0,
+        type: 'Envio'
       },
       request_debit_card_data: "",
       request_debit_card_show: false,
@@ -4014,6 +4017,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
+    showOperation: function showOperation() {
+      axios.get('operation-show').then(function (res) {
+        console.log(res.data);
+      });
+    },
+    amountMine: function amountMine() {
+      var _this = this;
+
+      axios.get('operation').then(function (res) {
+        _this.data.amountAccount = res.data.amount;
+      });
+    },
+    sentAmount: function sentAmount() {
+      var _this = this;
+
+      var body = _objectSpread({}, _this.data);
+
+      axios.post('operation', body).then(function (res) {
+        _this.amountMine();
+
+        _this.table.ajax.reload();
+      });
+    },
     searchByDate: function searchByDate() {
       this.table.ajax().reload();
     },
@@ -4042,34 +4068,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   mounted: function mounted() {
     var _this = this;
 
+    _this.showOperation();
+
+    _this.amountMine();
+
     $(document).ready(function () {
       _this.table = $('#table_id').DataTable({
         ajax: {
-          url: '/account-debit'
+          url: '/operation-show'
         },
         columns: [{
           data: 'id'
         }, {
-          data: "person.name"
+          data: "account_id"
         }, {
-          data: null,
-          render: function render(data, type, full, meta) {
-            return data.person.father_last_name + " " + data.person.mother_last_name;
-          }
+          data: "amount"
         }, {
-          data: "person.document_number"
-        }, {
-          data: "account_number"
-        }, {
-          data: "card.card_number"
+          data: "type"
         }, {
           data: "created_at"
-        }, {
-          data: null,
-          render: function render(data) {
-            if (data.request == 'Aprobado') return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-success show\"><i class=\"far fa-eye\"></i></button>\n                                        </div>\n                                    ";
-            return "\n                                        <div style = \" width : fit-content; margin : 0 auto \">\n                                            <button class=\"btn btn-link red\">Vac\xEDo</button>\n                                        </div>\n                                    ";
-          }
         }],
         language: {
           "sProcessing": "Procesando...",
@@ -63633,57 +63650,89 @@ var render = function() {
     [
       _c("div", { staticClass: "mt-4 mb-4" }, [
         _c("div", { staticClass: "row bg-01 pt-2 pb-3" }, [
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("label", { attrs: { for: "date_of_birth" } }, [
-                _vm._v(" Desde ")
-              ]),
-              _vm._v(" "),
-              _c("datepicker", {
-                attrs: {
-                  language: _vm.es,
-                  "disabled-dates": _vm.disabledDates,
-                  name: ""
-                },
-                model: {
-                  value: _vm.data.from,
-                  callback: function($$v) {
-                    _vm.$set(_vm.data, "from", $$v)
-                  },
-                  expression: "data.from"
+          _c("div", { staticClass: "col" }, [
+            _c("label", { attrs: { for: "date_of_birth" } }, [
+              _vm._v(" Cantidad ")
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.data.amountAccount,
+                  expression: "data.amountAccount"
                 }
-              })
-            ],
-            1
-          ),
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number" },
+              domProps: { value: _vm.data.amountAccount },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.data, "amountAccount", $event.target.value)
+                }
+              }
+            })
+          ]),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("label", { attrs: { for: "date_of_birth" } }, [
-                _vm._v(" Hasta ")
-              ]),
-              _vm._v(" "),
-              _c("datepicker", {
-                attrs: {
-                  language: _vm.es,
-                  "disabled-dates": _vm.disabledDates,
-                  name: ""
-                },
-                model: {
-                  value: _vm.data.to,
-                  callback: function($$v) {
-                    _vm.$set(_vm.data, "to", $$v)
-                  },
-                  expression: "data.to"
+          _c("div", { staticClass: "col" }, [
+            _c("label", { attrs: { for: "date_of_birth" } }, [
+              _vm._v(" Transferencia ")
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.data.amount,
+                  expression: "data.amount"
                 }
-              })
-            ],
-            1
-          ),
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number" },
+              domProps: { value: _vm.data.amount },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.data, "amount", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c("label", { attrs: { for: "date_of_birth" } }, [
+              _vm._v(" Cuenta ")
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.data.account_id,
+                  expression: "data.account_id"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text" },
+              domProps: { value: _vm.data.account_id },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.data, "account_id", $event.target.value)
+                }
+              }
+            })
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "col" }, [
             _c("div", { staticClass: "mt-4" }, [
@@ -63691,9 +63740,9 @@ var render = function() {
                 "button",
                 {
                   staticClass: "btn btn-success",
-                  on: { click: _vm.searchByDate }
+                  on: { click: _vm.sentAmount }
                 },
-                [_vm._v("BUSCAR")]
+                [_vm._v("Enviar")]
               )
             ])
           ])
@@ -63722,19 +63771,13 @@ var staticRenderFns = [
         _c("tr", [
           _c("th", [_vm._v("#")]),
           _vm._v(" "),
-          _c("th", [_vm._v("NOMBRE")]),
-          _vm._v(" "),
-          _c("th", [_vm._v("APELLIDOS")]),
-          _vm._v(" "),
-          _c("th", [_vm._v("DNI")]),
-          _vm._v(" "),
           _c("th", [_vm._v("CUENTA")]),
           _vm._v(" "),
-          _c("th", [_vm._v("Nro TARJETA")]),
+          _c("th", [_vm._v("MONTO")]),
           _vm._v(" "),
-          _c("th", [_vm._v("FECHA")]),
+          _c("th", [_vm._v("TIPO")]),
           _vm._v(" "),
-          _c("th", [_vm._v("ACCIÓN")])
+          _c("th", [_vm._v("FECHA")])
         ])
       ])
     ])
@@ -82191,7 +82234,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_EvalutionRequestLoan_vue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/EvalutionRequestLoan.vue */ "./resources/js/components/EvalutionRequestLoan.vue");
 /* harmony import */ var _components_Users_worker_vue__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/Users/worker.vue */ "./resources/js/components/Users/worker.vue");
 /* harmony import */ var _components_Users_PersonalData_vue__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./components/Users/PersonalData.vue */ "./resources/js/components/Users/PersonalData.vue");
-/* harmony import */ var _components_Users_TransferCredit_vue__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./components/Users/TransferCredit.vue */ "./resources/js/components/Users/TransferCredit.vue");
+/* harmony import */ var _components_Users_TransferCredit_vue__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./components/Users/TransferCredit.vue */ "./resources/js/components/Users/TransferCredit.vue");
 /* harmony import */ var _components_RegisterPerson_vue__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/RegisterPerson.vue */ "./resources/js/components/RegisterPerson.vue");
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _components_Users_Users_vue__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./components/Users/Users.vue */ "./resources/js/components/Users/Users.vue");
@@ -82288,7 +82331,7 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_20__["default"]({
     component: _components_RequestLoan_vue__WEBPACK_IMPORTED_MODULE_13__["default"]
   }, {
     path: '/transfer-credit',
-    component: _components_Users_TransferCredit_vue__WEBPACK_IMPORTED_MODULE_26__["default"]
+    component: _components_Users_TransferCredit_vue__WEBPACK_IMPORTED_MODULE_18__["default"]
   }, {
     path: '/evalution-credit-card',
     component: _components_EvalutionCreditCard_vue__WEBPACK_IMPORTED_MODULE_14__["default"]
